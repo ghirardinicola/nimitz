@@ -14,16 +14,20 @@ import numpy as np
 import torch
 
 print("Torch version:", torch.__version__)
+
+#%%
+import clip
+
+clip.available_models()
 #%% Analisi super-rapida
 results = quick_analysis('../images')
 
-# %% 
 # Custom characteristics
 custom_chars = {
     "style": ["photography", "painting", "illustration"],
-    "mood": ["happy", "sad", "neutral"]
+    "subject": ["people", "panorama", "things"]
 }
-results = run_nimitz_pipeline("../images", characteristics=custom_chars)
+results = run_nimitz_pipeline("../images", characteristics=custom_chars, model_name="ViT-B/32")
 
 # # Minimal functional approach
 # from embed import extract_image_features
