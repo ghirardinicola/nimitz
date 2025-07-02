@@ -24,8 +24,8 @@ results = quick_analysis('../images')
 
 # Custom characteristics
 custom_chars = {
-    "style": ["photography", "painting", "illustration"],
-    "subject": ["people", "panorama", "things"]
+    "style": ["a photography", "a painting", "an illustration"],
+    "subject": ["an image of people", "an image of a panorama", "an image of things"]
 }
 results = run_nimitz_pipeline("../images", characteristics=custom_chars, model_name="ViT-B/32")
 
