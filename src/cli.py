@@ -29,6 +29,11 @@ from image_card import (
     create_visual_image_cards,
     export_cards_to_csv,
 )
+from vocabulary_wizard import (
+    run_wizard,
+    quick_validate,
+    analyze_prompt_quality,
+)
 
 
 def describe_single_image(
@@ -265,6 +270,106 @@ def list_presets():
     print()
 
 
+def run_vocabulary_wizard(
+    image_directory: Optional[str] = None,
+    output_file: Optional[str] = None,
+    analyze_after: bool = False
+):
+    """
+    Run the interactive vocabulary wizard.
+
+    Args:
+        image_directory: Directory with sample images for suggestions
+        output_file: Output file to save vocabulary
+        analyze_after: Run analysis after creating vocabulary
+    """
+    print("\n NIMITZ - Vocabulary Wizard")
+    print("=" * 50)
+
+    # Run wizard
+    vocabulary = run_wizard(image_directory)
+
+    if not vocabulary:
+        print("\nVocabulary creation cancelled or empty.")
+        return
+
+    # Save if output specified
+    if output_file:
+        import json
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump({"characteristics": vocabulary}, f, indent=2, ensure_ascii=False)
+        print(f"\n Vocabulary saved to: {output_file}")
+
+    # Analyze if requested
+    if analyze_after and image_directory:
+        print("\n Running analysis with new vocabulary...")
+        from main import run_nimitz_pipeline
+        run_nimitz_pipeline(
+            image_directory=image_directory,
+            characteristics=vocabulary,
+            visualize=True
+        )
+
+
+def validate_vocabulary_file(vocabulary_file: str):
+    """
+    Validate a vocabulary JSON file.
+
+    Args:
+        vocabulary_file: Path to JSON file to validate
+    """
+    import json
+    from pathlib import Path
+
+    filepath = Path(vocabulary_file)
+
+    if not filepath.exists():
+        print(f"Error: File not found: {vocabulary_file}")
+        sys.exit(1)
+
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"Error: Invalid JSON: {e}")
+        sys.exit(1)
+
+    # Extract characteristics
+    characteristics = data.get('characteristics', data)
+
+    if not isinstance(characteristics, dict):
+        print("Error: Invalid vocabulary format. Expected 'characteristics' dictionary.")
+        sys.exit(1)
+
+    # Validate
+    report = quick_validate(characteristics)
+
+    print("\n VOCABULARY VALIDATION REPORT")
+    print("=" * 50)
+    print(f"  File: {vocabulary_file}")
+    print(f"  Characteristics: {report['total_characteristics']}")
+    print(f"  Total prompts: {report['total_prompts']}")
+    print()
+
+    # Per-characteristic quality
+    print(" Quality per characteristic:")
+    for name, quality in report['characteristic_quality'].items():
+        indicator = "" if quality['score'] >= 70 else "" if quality['score'] >= 50 else ""
+        print(f"  {indicator} {name}: {quality['score']}/100 ({quality['count']} prompts)")
+        if quality['issues']:
+            for issue in quality['issues'][:2]:
+                print(f"      - {issue}")
+
+    # Overall assessment
+    print()
+    if report['valid']:
+        print(" Vocabulary is valid and ready to use!")
+    else:
+        print(" Vocabulary has quality issues:")
+        for issue in report['issues']:
+            print(f"    - {issue}")
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -351,6 +456,39 @@ Examples:
         help='List available vocabulary presets'
     )
 
+    # -------------------------------------------------------------------------
+    # wizard command
+    # -------------------------------------------------------------------------
+    wizard_parser = subparsers.add_parser(
+        'wizard',
+        help='Interactive wizard to create custom vocabularies'
+    )
+    wizard_parser.add_argument(
+        '-d', '--directory',
+        help='Directory with sample images for suggestions'
+    )
+    wizard_parser.add_argument(
+        '-o', '--output',
+        help='Output file for saving the vocabulary (JSON)'
+    )
+    wizard_parser.add_argument(
+        '--analyze',
+        action='store_true',
+        help='After creating vocabulary, analyze images immediately'
+    )
+
+    # -------------------------------------------------------------------------
+    # validate command
+    # -------------------------------------------------------------------------
+    validate_parser = subparsers.add_parser(
+        'validate',
+        help='Validate a vocabulary file'
+    )
+    validate_parser.add_argument(
+        'vocabulary_file',
+        help='JSON file with vocabulary to validate'
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -378,6 +516,16 @@ Examples:
 
     elif args.command == 'presets':
         list_presets()
+
+    elif args.command == 'wizard':
+        run_vocabulary_wizard(
+            image_directory=args.directory,
+            output_file=args.output,
+            analyze_after=args.analyze
+        )
+
+    elif args.command == 'validate':
+        validate_vocabulary_file(args.vocabulary_file)
 
 
 if __name__ == '__main__':

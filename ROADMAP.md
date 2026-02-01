@@ -6,7 +6,7 @@ Elenco ordinato delle issue da creare. Ogni issue rappresenta una feature comple
 |---|-------|-------|
 | 1 | [MVP Manuale](#1-mvp-manuale) | ✅ done |
 | 2 | [Usabilità](#2-usabilità) | ✅ done |
-| 3 | [Vocabolario Collaborativo](#3-vocabolario-collaborativo) | ⚪ todo |
+| 3 | [Vocabolario Collaborativo](#3-vocabolario-collaborativo) | ✅ done |
 | 4 | [LLM-Only](#4-llm-only) | ⚪ todo |
 | 5 | [Gaming](#5-gaming) | ⚪ todo |
 | 6 | [Image Retrieval](#6-image-retrieval) | ⚪ todo |
@@ -44,15 +44,30 @@ Più facile da usare.
 ---
 
 ## 3. Vocabolario Collaborativo
-**Stato:** ⚪ todo
+**Stato:** ✅ done
 
 Il sistema aiuta a costruire il data model.
 
 ### Acceptance Criteria
-- [ ] Wizard interattivo per creare vocabolari
-- [ ] Suggerimenti basati sulle immagini caricate
-- [ ] Validazione prompt ("questo è troppo generico")
-- [ ] Ciclo raffina → analizza → migliora
+- [x] Wizard interattivo per creare vocabolari
+- [x] Suggerimenti basati sulle immagini caricate
+- [x] Validazione prompt ("questo è troppo generico")
+- [x] Ciclo raffina → analizza → migliora
+
+### Nuovi comandi CLI
+```bash
+# Avvia il wizard interattivo
+nimitz wizard
+
+# Wizard con suggerimenti basati su immagini
+nimitz wizard -d ./foto
+
+# Wizard con salvataggio automatico
+nimitz wizard -d ./foto -o mio_vocabolario.json
+
+# Valida un vocabolario esistente
+nimitz validate mio_vocabolario.json
+```
 
 ---
 

@@ -85,16 +85,114 @@ nimitz describe quadro.jpg --preset art
 nimitz presets
 ```
 
+### Crea un vocabolario personalizzato (Wizard)
+
+```bash
+# Avvia il wizard interattivo
+nimitz wizard
+
+# Wizard con suggerimenti basati sulle tue immagini
+nimitz wizard -d ./foto
+
+# Wizard con salvataggio automatico
+nimitz wizard -d ./foto -o mio_vocabolario.json
+
+# Wizard + analisi immediata
+nimitz wizard -d ./foto --analyze
+```
+
+Il wizard ti guida nella creazione di un vocabolario personalizzato:
+- **Suggerimenti automatici** basati sulle tue immagini
+- **Validazione prompt** ("questo e troppo generico")
+- **Ciclo interattivo** per raffinare le caratteristiche
+- **Test su immagini** prima di finalizzare
+
+#### Esempio di sessione wizard
+
+```
+$ nimitz wizard -d ./foto
+
+============================================================
+  NIMITZ - Vocabulary Wizard
+  Crea il tuo vocabolario personalizzato
+============================================================
+
+ Analizzo le tue immagini per suggerirti un vocabolario...
+  Analizzo 8 immagini di esempio...
+
+ Suggerimenti basati sulle tue immagini:
+--------------------------------------------------
+  ATMOSFERA:
+    - atmosfera luminosa e allegra
+    - atmosfera scura e misteriosa
+    - atmosfera calma e serena
+
+  COMPOSIZIONE:
+    - composizione centrata simmetrica
+    - composizione con regola dei terzi
+
+Vuoi usare questi suggerimenti come base? [S/n]: s
+ Suggerimenti aggiunti!
+
+--------------------------------------------------
+Vocabolario corrente: 2 caratteristiche
+
+Cosa vuoi fare? [nuova/modifica/show/test/done]: nuova
+
+ NUOVA CARATTERISTICA
+------------------------------
+Nome caratteristica (es: 'stile', 'atmosfera'): colore_dominante
+
+Inserisci i prompt per 'colore_dominante'.
+(invio vuoto per terminare, minimo 2 prompt)
+  1. tonalita calde rosse e arancioni
+     Aggiunto!
+  2. tonalita fredde blu e verdi
+     Aggiunto!
+  3. colori
+     Prompt troppo corto. Aggiungi piu dettagli...
+    Vuoi riprovare? [S/n]: s
+  3. palette neutra bianco grigio nero
+     Aggiunto!
+  4.
+
+ Qualita prompt: 85/100
+ Caratteristica 'colore_dominante' aggiunta con 3 prompt!
+
+Cosa vuoi fare? [nuova/modifica/show/test/done]: done
+
+============================================================
+  VOCABOLARIO COMPLETATO
+============================================================
+
+ Riepilogo:
+   Caratteristiche: 3
+   Prompt totali: 8
+
+Salva vocabolario su file? [percorso o invio per saltare]: mio_vocab.json
+ Salvato in: mio_vocab.json
+```
+
+### Valida un vocabolario
+
+```bash
+nimitz validate mio_vocabolario.json
+```
+
 ### Opzioni disponibili
 
 | Comando | Opzione | Descrizione |
 |---------|---------|-------------|
 | `analyze` | `-p, --preset` | Preset vocabolario (photography, art, products) |
 | `analyze` | `-o, --output` | Directory output |
-| `analyze` | `--no-visual` | Salta generazione carte PNG (più veloce) |
+| `analyze` | `--no-visual` | Salta generazione carte PNG (piu veloce) |
 | `analyze` | `-q, --quiet` | Output minimale |
 | `describe` | `-p, --preset` | Preset vocabolario |
 | `describe` | `-v, --verbose` | Output dettagliato |
+| `wizard` | `-d, --directory` | Directory immagini per suggerimenti |
+| `wizard` | `-o, --output` | File output per salvare vocabolario |
+| `wizard` | `--analyze` | Analizza immagini dopo creazione vocabolario |
+| `validate` | `vocabulary_file` | File JSON da validare |
 
 ## Preset vocabolari pronti
 
