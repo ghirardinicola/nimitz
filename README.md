@@ -107,6 +107,72 @@ Il wizard ti guida nella creazione di un vocabolario personalizzato:
 - **Ciclo interattivo** per raffinare le caratteristiche
 - **Test su immagini** prima di finalizzare
 
+#### Esempio di sessione wizard
+
+```
+$ nimitz wizard -d ./foto
+
+============================================================
+  NIMITZ - Vocabulary Wizard
+  Crea il tuo vocabolario personalizzato
+============================================================
+
+ Analizzo le tue immagini per suggerirti un vocabolario...
+  Analizzo 8 immagini di esempio...
+
+ Suggerimenti basati sulle tue immagini:
+--------------------------------------------------
+  ATMOSFERA:
+    - atmosfera luminosa e allegra
+    - atmosfera scura e misteriosa
+    - atmosfera calma e serena
+
+  COMPOSIZIONE:
+    - composizione centrata simmetrica
+    - composizione con regola dei terzi
+
+Vuoi usare questi suggerimenti come base? [S/n]: s
+ Suggerimenti aggiunti!
+
+--------------------------------------------------
+Vocabolario corrente: 2 caratteristiche
+
+Cosa vuoi fare? [nuova/modifica/show/test/done]: nuova
+
+ NUOVA CARATTERISTICA
+------------------------------
+Nome caratteristica (es: 'stile', 'atmosfera'): colore_dominante
+
+Inserisci i prompt per 'colore_dominante'.
+(invio vuoto per terminare, minimo 2 prompt)
+  1. tonalita calde rosse e arancioni
+     Aggiunto!
+  2. tonalita fredde blu e verdi
+     Aggiunto!
+  3. colori
+     Prompt troppo corto. Aggiungi piu dettagli...
+    Vuoi riprovare? [S/n]: s
+  3. palette neutra bianco grigio nero
+     Aggiunto!
+  4.
+
+ Qualita prompt: 85/100
+ Caratteristica 'colore_dominante' aggiunta con 3 prompt!
+
+Cosa vuoi fare? [nuova/modifica/show/test/done]: done
+
+============================================================
+  VOCABOLARIO COMPLETATO
+============================================================
+
+ Riepilogo:
+   Caratteristiche: 3
+   Prompt totali: 8
+
+Salva vocabolario su file? [percorso o invio per saltare]: mio_vocab.json
+ Salvato in: mio_vocab.json
+```
+
 ### Valida un vocabolario
 
 ```bash
