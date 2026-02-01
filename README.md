@@ -2,7 +2,9 @@
 
 **Trasforma le tue immagini in carte collezionabili con statistiche quantificate.**
 
-Come le carte con cui giocavi da bambino - ogni carta descrive un oggetto e ne misura le caratteristiche. NIMITZ era la carta quasi imbattibile del mazzo "navi". Ora puoi creare le tue.
+Ricordi i **Top Trumps** o i **Quartetti**? Ogni carta descriveva un oggetto e ne quantificava le caratteristiche - velocità, potenza, peso. La USS Nimitz era la carta quasi imbattibile del mazzo "navi".
+
+Ora puoi creare le tue carte, con le tue immagini e le tue caratteristiche.
 
 ## Cosa fa
 
@@ -89,4 +91,4 @@ Vedi la [Roadmap](ROADMAP.md) completa.
 
 ---
 
-*Il nome viene dalla USS Nimitz - la portaerei che era quasi imbattibile nel mazzo "navi".*
+*Il nome viene dalla USS Nimitz - la portaerei che era quasi imbattibile nel mazzo "navi" dei Top Trumps.*
