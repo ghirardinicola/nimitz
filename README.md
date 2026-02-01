@@ -85,11 +85,7 @@ NIMITZ genera:
 
 ## Prossimi passi
 
-- [ ] CLI per uso veloce da terminale
-- [ ] Creazione vocabolario interattiva
-- [ ] Carte visuali con thumbnail dell'immagine
-- [ ] Confronto carte (chi vince?)
-- [ ] Export in formato carta stampabile
+Vedi la [Roadmap](ROADMAP.md) completa.
 
 ---
 
