@@ -19,8 +19,11 @@ from image_card import (
 )
 
 from core import (
-    load_characteristics_from_json, 
+    load_characteristics_from_json,
     get_default_characteristics,
+    get_preset_characteristics,
+    list_available_presets,
+    get_preset_description,
     load_images,
     validate_characteristics,
     print_characteristics_summary,
@@ -55,6 +58,7 @@ def run_nimitz_pipeline(
     image_directory: str,
     characteristics: Optional[Dict[str, List[str]]] = None,
     characteristics_file: Optional[str] = None,
+    preset: Optional[str] = None,
     model_name: str = "ViT-B/32",
     clustering_method: str = 'kmeans',
     n_clusters: int = 5,
@@ -68,11 +72,12 @@ def run_nimitz_pipeline(
 ) -> Dict[str, Any]:
     """
     Complete NIMITZ pipeline for semantic image clustering
-    
+
     Args:
         image_directory: Path to directory containing images
         characteristics: Dict of characteristics {name: [prompts]}
         characteristics_file: Path to JSON file with characteristics
+        preset: Use a preset vocabulary ('photography', 'art', 'products')
         model_name: CLIP model to use
         clustering_method: 'kmeans' or 'dbscan'
         n_clusters: Number of clusters (for kmeans)
@@ -83,19 +88,22 @@ def run_nimitz_pipeline(
         visualize: Whether to show visualizations
         save_plots: Whether to save plot files
         **clustering_kwargs: Additional clustering parameters
-    
+
     Returns:
         Dict containing all results and data
     """
-    
+
     print("🚢 NIMITZ PIPELINE INITIATED")
     print("=" * 50)
-    
-    # 1. Setup characteristics
+
+    # 1. Setup characteristics (priority: explicit > file > preset > default)
     if characteristics_file:
         characteristics = load_characteristics_from_json(characteristics_file)
     elif characteristics is None:
-        characteristics = get_default_characteristics()
+        if preset:
+            characteristics = get_preset_characteristics(preset)
+        else:
+            characteristics = get_default_characteristics()
         
     if not validate_characteristics(characteristics):
         raise ValueError("Invalid characteristics provided")
@@ -269,26 +277,36 @@ def run_nimitz_pipeline(
 def quick_analysis(
     image_directory: str,
     characteristics_config: Optional[str] = None,
+    preset: Optional[str] = None,
     n_clusters: int = 3,
     visualize: bool = True
 ) -> Dict[str, Any]:
     """
     Quick analysis function for fast clustering
-    
+
     Args:
         image_directory: Directory with images
         characteristics_config: Path to characteristics JSON or None for defaults
+        preset: Use a preset vocabulary ('photography', 'art', 'products')
         n_clusters: Number of clusters
         visualize: Whether to show plots
-    
+
     Returns:
         Results dictionary
+
+    Example:
+        # Using preset vocabulary
+        results = quick_analysis("./photos", preset="photography")
+
+        # Using custom config file
+        results = quick_analysis("./artwork", characteristics_config="art_vocab.json")
     """
     print("🚢 NIMITZ: Quick mission initiated!")
-    
+
     return run_nimitz_pipeline(
         image_directory=image_directory,
         characteristics_file=characteristics_config,
+        preset=preset,
         n_clusters=n_clusters,
         visualize=visualize,
         save_plots=visualize
@@ -321,15 +339,32 @@ def create_custom_characteristics() -> Dict[str, List[str]]:
 
 # Example usage and testing
 if __name__ == "__main__":
-    # Example: Quick analysis with default characteristics
-    # results = quick_analysis("path/to/images", n_clusters=5)
-    
-    # Example: Custom characteristics
+    # Example 1: Quick analysis with preset vocabulary
+    # results = quick_analysis("./photos", preset="photography", n_clusters=5)
+
+    # Example 2: Quick analysis with art preset
+    # results = quick_analysis("./artwork", preset="art", n_clusters=3)
+
+    # Example 3: Product images analysis
+    # results = quick_analysis("./products", preset="products", n_clusters=4)
+
+    # Example 4: Custom characteristics
     # custom_chars = {
     #     "style": ["realistic photography", "artistic painting", "cartoon illustration"],
     #     "subject": ["people", "animals", "landscapes", "objects"]
     # }
     # results = run_nimitz_pipeline("path/to/images", characteristics=custom_chars)
-    
+
+    # Example 5: Full pipeline with preset
+    # results = run_nimitz_pipeline(
+    #     image_directory="./photos",
+    #     preset="photography",
+    #     n_clusters=5,
+    #     visualize=True
+    # )
+
     print("🚢 NIMITZ ready for deployment!")
     print("Use quick_analysis() or run_nimitz_pipeline() to start clustering")
+    print("\nAvailable preset vocabularies:")
+    for preset in list_available_presets():
+        print(f"  - {preset}: {get_preset_description(preset)}")
