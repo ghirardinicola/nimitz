@@ -38,10 +38,63 @@ NIMITZ vuole essere:
 pip install -r requirements.txt
 pip install git+https://github.com/openai/CLIP.git
 
-# Analizza le tue immagini
-cd src
-python main.py
+# Installa nimitz come comando
+pip install -e .
+
+# Ora puoi usare nimitz da qualsiasi directory!
+nimitz analyze ./foto --preset photography
 ```
+
+## CLI - Command Line Interface
+
+NIMITZ offre una CLI semplice e intuitiva:
+
+### Analizza una cartella di immagini
+
+```bash
+# Analisi con preset fotografia (default)
+nimitz analyze ./foto
+
+# Analisi con preset specifico
+nimitz analyze ./dipinti --preset art
+nimitz analyze ./catalogo --preset products
+
+# Output in directory custom
+nimitz analyze ./foto --output ./risultati
+
+# Modalità veloce (senza generazione carte visuali)
+nimitz analyze ./foto --no-visual
+```
+
+### Descrivi una singola immagine
+
+```bash
+# Descrizione base
+nimitz describe foto.jpg
+
+# Descrizione dettagliata
+nimitz describe foto.jpg --verbose
+
+# Con preset specifico
+nimitz describe quadro.jpg --preset art
+```
+
+### Visualizza i preset disponibili
+
+```bash
+nimitz presets
+```
+
+### Opzioni disponibili
+
+| Comando | Opzione | Descrizione |
+|---------|---------|-------------|
+| `analyze` | `-p, --preset` | Preset vocabolario (photography, art, products) |
+| `analyze` | `-o, --output` | Directory output |
+| `analyze` | `--no-visual` | Salta generazione carte PNG (più veloce) |
+| `analyze` | `-q, --quiet` | Output minimale |
+| `describe` | `-p, --preset` | Preset vocabolario |
+| `describe` | `-v, --verbose` | Output dettagliato |
 
 ## Preset vocabolari pronti
 

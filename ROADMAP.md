@@ -5,7 +5,7 @@ Elenco ordinato delle issue da creare. Ogni issue rappresenta una feature comple
 | # | Issue | Stato |
 |---|-------|-------|
 | 1 | [MVP Manuale](#1-mvp-manuale) | ✅ done |
-| 2 | [Usabilità](#2-usabilità) | ⚪ todo |
+| 2 | [Usabilità](#2-usabilità) | ✅ done |
 | 3 | [Vocabolario Collaborativo](#3-vocabolario-collaborativo) | ⚪ todo |
 | 4 | [LLM-Only](#4-llm-only) | ⚪ todo |
 | 5 | [Gaming](#5-gaming) | ⚪ todo |
@@ -31,15 +31,15 @@ Funziona, si usa da codice Python.
 ---
 
 ## 2. Usabilità
-**Stato:** ⚪ todo
+**Stato:** ✅ done
 
 Più facile da usare.
 
 ### Acceptance Criteria
-- [ ] CLI: `nimitz analyze ./foto --preset fotografia`
-- [ ] Progress bar durante l'elaborazione
-- [ ] Output semplificato (meno file, più chiari)
-- [ ] Analisi singola immagine: `nimitz describe foto.jpg`
+- [x] CLI: `nimitz analyze ./foto --preset fotografia`
+- [x] Progress bar durante l'elaborazione
+- [x] Output semplificato (meno file, più chiari)
+- [x] Analisi singola immagine: `nimitz describe foto.jpg`
 
 ---
 
