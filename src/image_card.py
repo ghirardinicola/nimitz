@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import json
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.gridspec import GridSpec
@@ -212,89 +212,222 @@ def print_all_feature_values(
 def create_visual_image_cards(
     cards_data: List[Dict[str, Any]],
     output_dir: str = "image_cards",
-    cards_per_page: int = 6
+    cards_per_page: int = 6,
+    show_thumbnails: bool = True,
+    thumbnail_size: Tuple[int, int] = (150, 150)
 ) -> None:
     """
-    Create visual image cards as PNG files
-    
+    Create visual image cards as PNG files with thumbnail previews
+
     Args:
         cards_data: List of image card data
         output_dir: Directory to save card images
         cards_per_page: Number of cards per page/image
+        show_thumbnails: Whether to show image thumbnails on cards
+        thumbnail_size: Size of thumbnails (width, height)
     """
-    print("🎨 NIMITZ: Creating visual image cards...")
-    
+    from PIL import Image as PILImage
+
+    print("🎨 NIMITZ: Creating visual image cards with thumbnails...")
+
     output_path = Path(output_dir)
     output_path.mkdir(exist_ok=True)
-    
+
     # Calculate number of pages needed
     n_pages = (len(cards_data) + cards_per_page - 1) // cards_per_page
-    
+
     for page in range(n_pages):
         start_idx = page * cards_per_page
         end_idx = min(start_idx + cards_per_page, len(cards_data))
         page_cards = cards_data[start_idx:end_idx]
-        
-        # Create figure
-        fig = plt.figure(figsize=(20, 16))
-        
+
+        # Create figure with GridSpec for better layout
+        fig = plt.figure(figsize=(20, 18))
+
         # Calculate grid layout
         cols = 3 if cards_per_page >= 6 else 2
         rows = (len(page_cards) + cols - 1) // cols
-        
+
         for i, card in enumerate(page_cards):
-            ax = plt.subplot(rows, cols, i + 1)
-            
+            # Create subplot with GridSpec for thumbnail + stats layout
+            gs = GridSpec(2, 1, height_ratios=[1, 1], hspace=0.1)
+
+            # Calculate position in overall grid
+            row_idx = i // cols
+            col_idx = i % cols
+
+            # Create axes for this card
+            card_left = col_idx / cols + 0.02
+            card_width = 1 / cols - 0.04
+            card_bottom = 1 - (row_idx + 1) / rows + 0.02
+            card_height = 1 / rows - 0.04
+
+            # Thumbnail section (top half)
+            ax_thumb = fig.add_axes([
+                card_left,
+                card_bottom + card_height * 0.45,
+                card_width,
+                card_height * 0.5
+            ])
+
+            # Stats section (bottom half)
+            ax_stats = fig.add_axes([
+                card_left,
+                card_bottom,
+                card_width,
+                card_height * 0.45
+            ])
+
+            # Load and display thumbnail
+            if show_thumbnails:
+                try:
+                    img = PILImage.open(card['image_path'])
+                    img.thumbnail(thumbnail_size, PILImage.Resampling.LANCZOS)
+                    ax_thumb.imshow(img)
+                    ax_thumb.set_title(card['image_name'], fontsize=10, fontweight='bold', pad=5)
+                except Exception as e:
+                    ax_thumb.text(0.5, 0.5, f"Image not found:\n{card['image_name']}",
+                                 ha='center', va='center', fontsize=8,
+                                 transform=ax_thumb.transAxes)
+                    ax_thumb.set_title(card['image_name'], fontsize=10, fontweight='bold', pad=5)
+            else:
+                ax_thumb.text(0.5, 0.5, card['image_name'],
+                             ha='center', va='center', fontsize=12, fontweight='bold',
+                             transform=ax_thumb.transAxes)
+
+            ax_thumb.axis('off')
+
+            # Stats section
+            ax_stats.axis('off')
+
             # Create card background
-            rect = patches.Rectangle((0, 0), 1, 1, linewidth=2, 
-                                   edgecolor='navy', facecolor='lightblue', alpha=0.3)
-            ax.add_patch(rect)
-            
-            # Card title
-            ax.text(0.5, 0.95, card['image_name'], 
-                   ha='center', va='top', fontsize=12, fontweight='bold',
-                   transform=ax.transAxes)
-            
+            rect = patches.FancyBboxPatch(
+                (0.02, 0.02), 0.96, 0.96,
+                boxstyle="round,pad=0.02,rounding_size=0.05",
+                linewidth=2, edgecolor='navy', facecolor='aliceblue', alpha=0.7
+            )
+            ax_stats.add_patch(rect)
+
             # Feature summary
             summary = card['feature_summary']
-            ax.text(0.05, 0.85, f"Max Score: {summary['overall_max']:.3f}", 
-                   ha='left', va='top', fontsize=9, transform=ax.transAxes)
-            ax.text(0.05, 0.80, f"Mean: {summary['overall_mean']:.3f}", 
-                   ha='left', va='top', fontsize=9, transform=ax.transAxes)
-            ax.text(0.05, 0.75, f"High Conf: {summary['high_confidence_features']}", 
-                   ha='left', va='top', fontsize=9, transform=ax.transAxes)
-            
-            # Dominant features
-            y_pos = 0.67
-            ax.text(0.05, y_pos, "Dominant Features:", 
-                   ha='left', va='top', fontsize=10, fontweight='bold',
-                   transform=ax.transAxes)
-            
-            features_to_show = card['dominant_features'][:4]  # Top 4 for space
+            stats_text = f"Max: {summary['overall_max']:.2f}  |  Mean: {summary['overall_mean']:.2f}  |  High Conf: {summary['high_confidence_features']}"
+            ax_stats.text(0.5, 0.9, stats_text,
+                         ha='center', va='top', fontsize=8,
+                         transform=ax_stats.transAxes, style='italic')
+
+            # Dominant features as stat bars
+            features_to_show = card['dominant_features'][:4]
+            y_start = 0.75
+
             for j, feature in enumerate(features_to_show):
-                y_pos -= 0.08
-                color = 'red' if feature['confidence'] == 'high' else 'orange'
-                ax.text(0.05, y_pos, 
-                       f"• {feature['characteristic']}: {feature['score']:.3f}", 
-                       ha='left', va='top', fontsize=8, color=color,
-                       transform=ax.transAxes)
-            
-            # Remove axes
-            ax.set_xlim(0, 1)
-            ax.set_ylim(0, 1)
-            ax.set_xticks([])
-            ax.set_yticks([])
-            
-        plt.tight_layout()
-        
+                y_pos = y_start - j * 0.18
+
+                # Feature name (shortened)
+                char_short = feature['characteristic'].replace('_', ' ').title()[:15]
+                ax_stats.text(0.08, y_pos, char_short,
+                             ha='left', va='center', fontsize=8, fontweight='bold',
+                             transform=ax_stats.transAxes)
+
+                # Score bar
+                bar_color = '#2E86AB' if feature['confidence'] == 'high' else '#F6AE2D'
+                bar_width = feature['score'] * 0.5  # Scale to fit
+                bar = patches.FancyBboxPatch(
+                    (0.35, y_pos - 0.04), bar_width, 0.08,
+                    boxstyle="round,pad=0.01,rounding_size=0.02",
+                    facecolor=bar_color, edgecolor='none', alpha=0.8,
+                    transform=ax_stats.transAxes
+                )
+                ax_stats.add_patch(bar)
+
+                # Score value
+                ax_stats.text(0.88, y_pos, f"{feature['score']:.2f}",
+                             ha='right', va='center', fontsize=8,
+                             transform=ax_stats.transAxes)
+
+            ax_stats.set_xlim(0, 1)
+            ax_stats.set_ylim(0, 1)
+
+        plt.suptitle(f"NIMITZ Image Cards - Page {page + 1}/{n_pages}",
+                    fontsize=14, fontweight='bold', y=0.99)
+
         # Save page
         page_filename = output_path / f"image_cards_page_{page+1}.png"
-        plt.savefig(page_filename, dpi=300, bbox_inches='tight')
+        plt.savefig(page_filename, dpi=300, bbox_inches='tight', facecolor='white')
         plt.close()
-        
+
         print(f"📄 Page {page+1}/{n_pages} saved: {page_filename}")
-    
+
+    # Also create individual card images
+    individual_dir = output_path / "individual"
+    individual_dir.mkdir(exist_ok=True)
+
+    for card in cards_data:
+        fig, (ax_thumb, ax_stats) = plt.subplots(2, 1, figsize=(4, 6),
+                                                  gridspec_kw={'height_ratios': [1.2, 1]})
+
+        # Thumbnail
+        if show_thumbnails:
+            try:
+                img = PILImage.open(card['image_path'])
+                img.thumbnail((300, 300), PILImage.Resampling.LANCZOS)
+                ax_thumb.imshow(img)
+            except Exception:
+                ax_thumb.text(0.5, 0.5, "Image not found",
+                             ha='center', va='center', transform=ax_thumb.transAxes)
+
+        ax_thumb.set_title(card['image_name'], fontsize=11, fontweight='bold', pad=8)
+        ax_thumb.axis('off')
+
+        # Stats
+        ax_stats.axis('off')
+        rect = patches.FancyBboxPatch(
+            (0.02, 0.02), 0.96, 0.96,
+            boxstyle="round,pad=0.02,rounding_size=0.05",
+            linewidth=2, edgecolor='navy', facecolor='aliceblue', alpha=0.7
+        )
+        ax_stats.add_patch(rect)
+
+        summary = card['feature_summary']
+        ax_stats.text(0.5, 0.92, f"Score: {summary['overall_max']:.2f} | Conf: {summary['high_confidence_features']} high",
+                     ha='center', va='top', fontsize=9, style='italic',
+                     transform=ax_stats.transAxes)
+
+        features_to_show = card['dominant_features'][:4]
+        y_start = 0.75
+
+        for j, feature in enumerate(features_to_show):
+            y_pos = y_start - j * 0.18
+            char_short = feature['characteristic'].replace('_', ' ').title()[:12]
+            ax_stats.text(0.08, y_pos, char_short, ha='left', va='center', fontsize=9,
+                         fontweight='bold', transform=ax_stats.transAxes)
+
+            bar_color = '#2E86AB' if feature['confidence'] == 'high' else '#F6AE2D'
+            bar_width = feature['score'] * 0.55
+            bar = patches.FancyBboxPatch(
+                (0.32, y_pos - 0.05), bar_width, 0.1,
+                boxstyle="round,pad=0.01,rounding_size=0.02",
+                facecolor=bar_color, edgecolor='none', alpha=0.8,
+                transform=ax_stats.transAxes
+            )
+            ax_stats.add_patch(bar)
+            ax_stats.text(0.92, y_pos, f"{feature['score']:.2f}",
+                         ha='right', va='center', fontsize=9,
+                         transform=ax_stats.transAxes)
+
+        ax_stats.set_xlim(0, 1)
+        ax_stats.set_ylim(0, 1)
+
+        plt.tight_layout()
+
+        # Safe filename
+        safe_name = "".join(c if c.isalnum() or c in "._-" else "_" for c in card['image_name'])
+        card_filename = individual_dir / f"card_{safe_name}.png"
+        plt.savefig(card_filename, dpi=200, bbox_inches='tight', facecolor='white')
+        plt.close()
+
     print(f"🎨 NIMITZ: Visual cards completed in {output_path}")
+    print(f"   📁 Page views: {output_path}")
+    print(f"   📁 Individual cards: {individual_dir}")
 
 def export_cards_to_csv(
     cards_data: List[Dict[str, Any]], 

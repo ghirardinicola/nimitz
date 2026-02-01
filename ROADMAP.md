@@ -4,7 +4,7 @@ Elenco ordinato delle issue da creare. Ogni issue rappresenta una feature comple
 
 | # | Issue | Stato |
 |---|-------|-------|
-| 1 | [MVP Manuale](#1-mvp-manuale) | 🟡 in progress |
+| 1 | [MVP Manuale](#1-mvp-manuale) | ✅ done |
 | 2 | [Usabilità](#2-usabilità) | ⚪ todo |
 | 3 | [Vocabolario Collaborativo](#3-vocabolario-collaborativo) | ⚪ todo |
 | 4 | [LLM-Only](#4-llm-only) | ⚪ todo |
@@ -14,7 +14,7 @@ Elenco ordinato delle issue da creare. Ogni issue rappresenta una feature comple
 ---
 
 ## 1. MVP Manuale
-**Stato:** 🟡 in progress
+**Stato:** ✅ done
 
 Funziona, si usa da codice Python.
 
@@ -23,10 +23,10 @@ Funziona, si usa da codice Python.
 - [x] Vocabolario custom via dizionario
 - [x] Export CSV/JSON
 - [x] Clustering immagini simili
-- [ ] Fix: rinominare `exmples.py` → `examples.py`
-- [ ] Aggiungere `requirements.txt`
-- [ ] Carte visuali con thumbnail (non solo testo)
-- [ ] Preset vocabolari pronti (fotografia, arte, prodotti)
+- [x] Fix: rinominare `exmples.py` → `examples.py`
+- [x] Aggiungere `requirements.txt`
+- [x] Carte visuali con thumbnail (non solo testo)
+- [x] Preset vocabolari pronti (fotografia, arte, prodotti)
 
 ---
 

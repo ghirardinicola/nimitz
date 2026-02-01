@@ -35,13 +35,36 @@ NIMITZ vuole essere:
 
 ```bash
 # Installa le dipendenze
-pip install torch torchvision numpy pandas matplotlib seaborn scikit-learn pillow ftfy regex
+pip install -r requirements.txt
 pip install git+https://github.com/openai/CLIP.git
 
 # Analizza le tue immagini
 cd src
 python main.py
 ```
+
+## Preset vocabolari pronti
+
+NIMITZ include vocabolari pronti per iniziare subito:
+
+```python
+from main import quick_analysis
+
+# Per fotografie
+results = quick_analysis("./foto", preset="photography")
+
+# Per opere d'arte
+results = quick_analysis("./dipinti", preset="art")
+
+# Per immagini prodotto
+results = quick_analysis("./catalogo", preset="products")
+```
+
+| Preset | Caratteristiche analizzate |
+|--------|---------------------------|
+| `photography` | composizione, profondità di campo, illuminazione, mood, stile colore, soggetto |
+| `art` | stile artistico, medium, palette colori, soggetto, tecnica, tono emotivo |
+| `products` | categoria, presentazione, illuminazione, brand feel, schema colori, superfici |
 
 ## Definisci il tuo vocabolario
 
@@ -80,7 +103,8 @@ results = run_nimitz_pipeline(
 ## Output
 
 NIMITZ genera:
-- **Carte individuali** per ogni immagine con tutte le statistiche
+- **Carte visuali con thumbnail** - ogni immagine diventa una carta con anteprima e statistiche
+- **Carte individuali** in PNG per ogni immagine
 - **Cluster** di immagini simili (il tuo mazzo organizzato)
 - **Visualizzazioni** per esplorare la collezione
 - **Export CSV/JSON** per usare i dati altrove
