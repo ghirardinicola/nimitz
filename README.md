@@ -85,16 +85,48 @@ nimitz describe quadro.jpg --preset art
 nimitz presets
 ```
 
+### Crea un vocabolario personalizzato (Wizard)
+
+```bash
+# Avvia il wizard interattivo
+nimitz wizard
+
+# Wizard con suggerimenti basati sulle tue immagini
+nimitz wizard -d ./foto
+
+# Wizard con salvataggio automatico
+nimitz wizard -d ./foto -o mio_vocabolario.json
+
+# Wizard + analisi immediata
+nimitz wizard -d ./foto --analyze
+```
+
+Il wizard ti guida nella creazione di un vocabolario personalizzato:
+- **Suggerimenti automatici** basati sulle tue immagini
+- **Validazione prompt** ("questo e troppo generico")
+- **Ciclo interattivo** per raffinare le caratteristiche
+- **Test su immagini** prima di finalizzare
+
+### Valida un vocabolario
+
+```bash
+nimitz validate mio_vocabolario.json
+```
+
 ### Opzioni disponibili
 
 | Comando | Opzione | Descrizione |
 |---------|---------|-------------|
 | `analyze` | `-p, --preset` | Preset vocabolario (photography, art, products) |
 | `analyze` | `-o, --output` | Directory output |
-| `analyze` | `--no-visual` | Salta generazione carte PNG (più veloce) |
+| `analyze` | `--no-visual` | Salta generazione carte PNG (piu veloce) |
 | `analyze` | `-q, --quiet` | Output minimale |
 | `describe` | `-p, --preset` | Preset vocabolario |
 | `describe` | `-v, --verbose` | Output dettagliato |
+| `wizard` | `-d, --directory` | Directory immagini per suggerimenti |
+| `wizard` | `-o, --output` | File output per salvare vocabolario |
+| `wizard` | `--analyze` | Analizza immagini dopo creazione vocabolario |
+| `validate` | `vocabulary_file` | File JSON da validare |
 
 ## Preset vocabolari pronti
 
