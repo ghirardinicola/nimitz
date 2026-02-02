@@ -193,6 +193,62 @@ nimitz validate mio_vocabolario.json
 | `wizard` | `-o, --output` | File output per salvare vocabolario |
 | `wizard` | `--analyze` | Analizza immagini dopo creazione vocabolario |
 | `validate` | `vocabulary_file` | File JSON da validare |
+| `llm status` | - | Verifica disponibilità provider LLM |
+| `llm describe` | `image` | Immagine da analizzare con LLM |
+| `llm analyze` | `directory` | Directory da analizzare con LLM |
+| `llm vocab` | `directory` | Genera vocabolario con LLM |
+
+## Modalità LLM (senza CLIP)
+
+NIMITZ supporta anche l'analisi tramite LLM multimodali (GPT-4V / Claude Vision / Gemini), senza bisogno di CLIP o PyTorch.
+
+Usa `litellm` come proxy unificato per tutti i provider.
+
+### Setup
+
+```bash
+# Installa litellm
+pip install litellm
+
+# Imposta la chiave API per il provider che vuoi usare
+export ANTHROPIC_API_KEY="your-key"  # per Claude
+export GEMINI_API_KEY="your-key"     # per Gemini
+export OPENAI_API_KEY="your-key"     # per GPT-4
+```
+
+### Provider supportati
+
+| Provider | Modello | Variabile d'ambiente |
+|----------|---------|---------------------|
+| Anthropic | Claude Sonnet | `ANTHROPIC_API_KEY` |
+| Google | Gemini 2.0 Flash | `GEMINI_API_KEY` |
+| OpenAI | GPT-4o | `OPENAI_API_KEY` |
+
+### Comandi LLM
+
+```bash
+# Verifica quali provider sono disponibili
+nimitz llm status
+
+# Descrivi una singola immagine
+nimitz llm describe foto.jpg
+nimitz llm describe foto.jpg --provider gemini  # usa Gemini
+nimitz llm describe foto.jpg --lang it          # risposta in italiano
+
+# Analizza una directory di immagini
+nimitz llm analyze ./foto --preset photography
+nimitz llm analyze ./foto --provider anthropic  # forza provider specifico
+
+# Genera un vocabolario automaticamente analizzando le tue immagini
+nimitz llm vocab ./foto -o mio_vocabolario.json
+```
+
+### Vantaggi e svantaggi
+
+| Modalità | Pro | Contro |
+|----------|-----|--------|
+| CLIP (default) | Veloce, offline, gratuito | Richiede PyTorch, meno flessibile |
+| LLM | Più flessibile, descrizioni naturali, genera vocabolari | Costi API, più lento, richiede internet |
 
 ## Preset vocabolari pronti
 
