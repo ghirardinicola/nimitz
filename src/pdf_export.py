@@ -7,7 +7,13 @@ Export cards as printable PDF files
 import io
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
-from PIL import Image as PILImage
+
+try:
+    from PIL import Image as PILImage
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
+    PILImage = None
 
 try:
     from reportlab.lib.pagesizes import A4, LETTER
@@ -42,8 +48,8 @@ CARDS_PER_PAGE_LETTER = 9  # 3x3 grid on Letter
 
 
 def check_pdf_support() -> bool:
-    """Check if PDF export is available"""
-    return REPORTLAB_AVAILABLE
+    """Check if PDF export is available (requires reportlab and PIL)"""
+    return REPORTLAB_AVAILABLE and PIL_AVAILABLE
 
 
 def get_card_color(rarity_tier: str) -> str:
@@ -217,9 +223,15 @@ def export_cards_to_pdf(
     Returns:
         Path to created PDF file
     """
-    if not REPORTLAB_AVAILABLE:
+    if not REPORTLAB_AVAILABLE or not PIL_AVAILABLE:
+        missing = []
+        if not REPORTLAB_AVAILABLE:
+            missing.append("reportlab")
+        if not PIL_AVAILABLE:
+            missing.append("Pillow")
         raise ImportError(
-            "PDF export requires reportlab. Install with: pip install reportlab"
+            f"PDF export requires: {', '.join(missing)}. "
+            f"Install with: pip install {' '.join(missing)}"
         )
 
     if not cards:
@@ -301,9 +313,15 @@ def export_single_card_pdf(
     Returns:
         Path to created PDF file
     """
-    if not REPORTLAB_AVAILABLE:
+    if not REPORTLAB_AVAILABLE or not PIL_AVAILABLE:
+        missing = []
+        if not REPORTLAB_AVAILABLE:
+            missing.append("reportlab")
+        if not PIL_AVAILABLE:
+            missing.append("Pillow")
         raise ImportError(
-            "PDF export requires reportlab. Install with: pip install reportlab"
+            f"PDF export requires: {', '.join(missing)}. "
+            f"Install with: pip install {' '.join(missing)}"
         )
 
     # Calculate scaled dimensions
@@ -481,13 +499,18 @@ def print_pdf_export_info() -> None:
     print("\n PDF EXPORT INFO")
     print("=" * 50)
 
-    if REPORTLAB_AVAILABLE:
+    if REPORTLAB_AVAILABLE and PIL_AVAILABLE:
         print("  Status: Available")
         print("\n  Card size: 63.5mm x 88.9mm (standard trading card)")
         print("  Layout: 3x3 grid per page")
         print("  Supported formats: A4, Letter")
     else:
         print("  Status: NOT AVAILABLE")
-        print("\n  To enable PDF export, install reportlab:")
-        print("    pip install reportlab")
+        missing = []
+        if not REPORTLAB_AVAILABLE:
+            missing.append("reportlab")
+        if not PIL_AVAILABLE:
+            missing.append("Pillow")
+        print(f"\n  Missing dependencies: {', '.join(missing)}")
+        print(f"  Install with: pip install {' '.join(missing)}")
     print()

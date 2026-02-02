@@ -40,7 +40,7 @@ class Deck:
         """
         self.name = name
         self.description = description
-        self.cards: List[Dict[str, Any]] = cards if cards else []
+        self.cards: List[Dict[str, Any]] = list(cards) if cards else []
         self.created_at = datetime.now().isoformat()
         self.updated_at = self.created_at
         self.metadata: Dict[str, Any] = {}
