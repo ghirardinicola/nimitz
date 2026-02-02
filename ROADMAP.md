@@ -9,7 +9,7 @@ Elenco ordinato delle issue da creare. Ogni issue rappresenta una feature comple
 | 3 | [Vocabolario Collaborativo](#3-vocabolario-collaborativo) | ✅ done |
 | 4 | [LLM-Only](#4-llm-only) | ✅ done |
 | 5 | [Gaming](#5-gaming) | ✅ done |
-| 6 | [Image Retrieval](#6-image-retrieval) | ⚪ todo |
+| 6 | [Image Retrieval](#6-image-retrieval) | ✅ done |
 
 ---
 
@@ -175,21 +175,21 @@ nimitz export-png cards.json -o ./card_images        # Export PNG individuali
 ---
 
 ## 6. Image Retrieval
-**Stato:** ⚪ todo
+**Stato:** ✅ done
 
 Genera carte partendo da descrizioni testuali, recuperando immagini dal web.
 
 **Esempio d'uso:** creare un mazzo di carte dei giocatori di baseball del Parma Clima partendo solo dai nomi.
 
 ### Acceptance Criteria
-- [ ] Input da lista testuale (nomi, descrizioni)
-- [ ] Ricerca immagini via API (Google Images, Bing, Unsplash, ecc.)
-- [ ] Selezione automatica immagine migliore per ogni soggetto
-- [ ] Pipeline completa: descrizione → immagine → carta con stats
-- [ ] Gestione copyright/licenze immagini
-- [ ] Fallback: placeholder per immagini non trovate
-- [ ] Batch processing per mazzi completi
-- [ ] Cache immagini già scaricate
+- [x] Input da lista testuale (nomi, descrizioni)
+- [x] Ricerca immagini via API (Unsplash, Pexels)
+- [x] Selezione automatica immagine migliore per ogni soggetto
+- [x] Pipeline completa: descrizione → immagine → carta con stats
+- [x] Gestione copyright/licenze immagini
+- [x] Fallback: placeholder per immagini non trovate
+- [x] Batch processing per mazzi completi
+- [x] Cache immagini già scaricate
 
 ### Workflow esempio
 ```
@@ -198,6 +198,53 @@ Genera carte partendo da descrizioni testuali, recuperando immagini dal web.
 3. Analizza l'immagine trovata
 4. Genera la carta con statistiche
 ```
+
+### Nuovi comandi CLI
+```bash
+# Verifica configurazione API
+nimitz retrieve status
+
+# Recupera una singola immagine
+nimitz retrieve single "Golden Gate Bridge at sunset"
+nimitz retrieve single "Marco Bianchi baseball player" --preset art
+
+# Recupera e genera carte da un file di descrizioni
+nimitz retrieve batch players.txt                    # File .txt con un nome per riga
+nimitz retrieve batch descriptions.json              # File .json con lista
+nimitz retrieve batch data.csv                       # File .csv
+
+# Opzioni avanzate
+nimitz retrieve batch players.txt --source pexels    # Usa Pexels invece di Unsplash
+nimitz retrieve batch players.txt --no-clip          # Disabilita selezione CLIP
+nimitz retrieve batch players.txt --no-analyze       # Solo scarica, non analizzare
+nimitz retrieve batch players.txt --cache ./cache    # Directory cache custom
+
+# 🆕 Web Discovery - trova automaticamente i nomi online!
+nimitz retrieve discover "Parma Clima Baseball roster" -o players.txt
+nimitz retrieve discover "San Francisco Giants 2024" -o giants.txt --template "{name}, baseball player"
+nimitz retrieve discover "Italian Renaissance painters" -o painters.json --auto  # Auto-retrieve dopo discovery
+```
+
+### Requisiti
+- **Per Image Retrieval** - API Key richiesta (almeno una):
+  - **Unsplash**: `UNSPLASH_ACCESS_KEY` (gratuita, ottima qualità)
+    - Registrati su: https://unsplash.com/developers
+  - **Pexels**: `PEXELS_API_KEY` (gratuita, ottima qualità)
+    - Registrati su: https://www.pexels.com/api/
+
+- **Per Web Discovery** (opzionale):
+  - **Brave Search**: `BRAVE_API_KEY` (2,000 query/mese gratis)
+    - Registrati su: https://brave.com/search/api/
+
+### Caratteristiche implementate
+- **Multi-source**: Supporto Unsplash e Pexels con licenze permissive
+- **CLIP Selection**: Sceglie automaticamente l'immagine più pertinente tra i candidati
+- **Smart Caching**: Cache locale per evitare re-download
+- **License Tracking**: Metadati completi di licenza e attribuzione
+- **Placeholder Fallback**: Genera immagini placeholder per ricerche fallite
+- **Batch Processing**: Processa liste di descrizioni da file .txt, .csv, o .json
+- **Full Pipeline**: Integrazione completa con analisi CLIP e generazione carte
+- **🆕 Web Discovery**: Scopre automaticamente entità (giocatori, persone, etc.) da ricerche web con Brave Search
 
 ---
 

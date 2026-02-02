@@ -8,7 +8,13 @@ pandas
 tqdm
 ftfy
 regex
+requests
 git+https://github.com/openai/CLIP.git
+
+# Optional: for Image Retrieval (nimitz retrieve ...)
+# Set environment variables:
+# - UNSPLASH_ACCESS_KEY for Unsplash (get at https://unsplash.com/developers)
+# - PEXELS_API_KEY for Pexels (get at https://www.pexels.com/api/)
 
 # Optional: for LLM mode (nimitz llm ...)
 # pip install litellm    # unified proxy for all LLM providers (recommended)
