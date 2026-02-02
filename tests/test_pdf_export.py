@@ -123,6 +123,10 @@ class TestExportPdf:
             assert result.suffix == '.pdf'
             assert result.exists()
 
+    @pytest.mark.skipif(
+        not (REPORTLAB_AVAILABLE and PIL_AVAILABLE),
+        reason="PDF export requires reportlab and PIL"
+    )
     def test_export_cards_to_pdf_empty_list(self):
         """Exporting empty list should raise ValueError"""
         with pytest.raises(ValueError, match="No cards"):
