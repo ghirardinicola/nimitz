@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nimitz"
+version = "0.1.0"
+description = "Transform images into collectible cards with quantified statistics"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "pillow",
+    "matplotlib",
+    "pandas",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+clip = [
+    "torch",
+    "scikit-learn",
+    "seaborn",
+    "ftfy",
+    "regex",
+]
+llm = [
+    "litellm",
+]
+pdf = [
+    "reportlab",
+]
+dev = [
+    "pytest",
+]
+
+[project.scripts]
+nimitz = "cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
