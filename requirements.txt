@@ -13,3 +13,9 @@ git+https://github.com/openai/CLIP.git
 # Optional: for LLM mode (nimitz llm ...)
 # pip install litellm    # unified proxy for all LLM providers (recommended)
 # Supports: OpenAI (GPT-4V), Anthropic (Claude), Google (Gemini)
+
+# Optional: for PDF export (nimitz export-pdf)
+# pip install reportlab
+
+# Development/Testing
+# pip install pytest

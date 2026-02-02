@@ -8,7 +8,7 @@ Elenco ordinato delle issue da creare. Ogni issue rappresenta una feature comple
 | 2 | [Usabilità](#2-usabilità) | ✅ done |
 | 3 | [Vocabolario Collaborativo](#3-vocabolario-collaborativo) | ✅ done |
 | 4 | [LLM-Only](#4-llm-only) | ✅ done |
-| 5 | [Gaming](#5-gaming) | ⚪ todo |
+| 5 | [Gaming](#5-gaming) | ✅ done |
 | 6 | [Image Retrieval](#6-image-retrieval) | ⚪ todo |
 
 ---
@@ -121,15 +121,56 @@ nimitz llm vocab ./foto --samples 10  # usa più immagini di esempio
 ---
 
 ## 5. Gaming
-**Stato:** ⚪ todo
+**Stato:** ✅ done
 
 Le carte diventano un gioco.
 
 ### Acceptance Criteria
-- [ ] Confronto carte ("chi vince?")
-- [ ] Export carta stampabile (PDF/PNG)
-- [ ] Deck builder - costruisci il tuo mazzo
-- [ ] Rarità carte basata su unicità features
+- [x] Confronto carte ("chi vince?")
+- [x] Export carta stampabile (PDF/PNG)
+- [x] Deck builder - costruisci il tuo mazzo
+- [x] Rarità carte basata su unicità features
+
+### Nuovi comandi CLI
+```bash
+# Confronto carte
+nimitz compare cards.json foto1.jpg foto2.jpg        # Confronto power level
+nimitz compare cards.json foto1.jpg foto2.jpg -c lighting  # Confronto su caratteristica specifica
+
+# Battaglia completa
+nimitz battle cards.json foto1.jpg foto2.jpg        # Battaglia 5 round
+nimitz battle cards.json foto1.jpg foto2.jpg -r 3   # Battaglia 3 round
+
+# Rarità
+nimitz rarity cards.json                             # Top 10 carte per rarità
+nimitz rarity cards.json -n 20                       # Top 20 carte
+
+# Statistiche collezione
+nimitz stats cards.json                              # Statistiche complete
+
+# Gestione mazzi
+nimitz deck create cards.json --name "My Deck" -o my_deck.json
+nimitz deck create cards.json --top 10 -o top10.json  # Top 10 per power
+nimitz deck show my_deck.json                        # Info mazzo
+nimitz deck show my_deck.json --list                 # Lista tutte le carte
+nimitz deck add my_deck.json cards.json foto1.jpg    # Aggiungi carta
+nimitz deck remove my_deck.json foto1.jpg            # Rimuovi carta
+
+# Export stampabili
+nimitz export-pdf cards.json -o carte.pdf            # Export PDF (3x3 per pagina)
+nimitz export-pdf cards.json --size Letter           # Formato Letter
+nimitz export-png cards.json -o ./card_images        # Export PNG individuali
+```
+
+### Caratteristiche implementate
+- **Power Level**: Score complessivo della carta (0-100) basato su max score, mean score e feature ad alta confidenza
+- **Rarità**: 5 livelli (Common, Uncommon, Rare, Epic, Legendary) basati sull'unicità della carta rispetto alla collezione
+- **Battaglia**: Confronto multi-round su caratteristiche casuali
+- **Deck Management**: Crea, salva, carica e modifica mazzi personalizzati
+- **Export PDF**: Carte stampabili in formato trading card standard (63.5mm x 88.9mm)
+
+### Requisiti aggiuntivi
+- Per PDF export: `pip install reportlab`
 
 ---
 

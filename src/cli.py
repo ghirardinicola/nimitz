@@ -44,6 +44,31 @@ from llm_analyzer import (
     check_llm_availability,
     print_llm_status,
 )
+from gaming import (
+    compare_cards,
+    battle_cards,
+    calculate_collection_stats,
+    enhance_cards_with_gaming_stats,
+    print_battle_result,
+    print_comparison_result,
+    print_collection_stats,
+    RarityTier,
+    RARITY_SYMBOLS,
+)
+from deck import (
+    Deck,
+    create_deck_from_cards,
+    merge_decks,
+    print_deck_info,
+    list_cards_in_deck,
+)
+from pdf_export import (
+    check_pdf_support,
+    export_cards_to_pdf,
+    export_single_card_pdf,
+    export_cards_to_png,
+    print_pdf_export_info,
+)
 
 
 def describe_single_image(
@@ -661,6 +686,251 @@ def generate_vocabulary_llm(
     return vocabulary
 
 
+# =============================================================================
+# GAMING FUNCTIONS
+# =============================================================================
+
+def load_cards_from_json(filepath: str) -> List[Dict[str, Any]]:
+    """Load cards from a JSON file (from previous analysis)"""
+    import json
+    path = Path(filepath)
+
+    if not path.exists():
+        print(f"Error: File not found: {filepath}")
+        sys.exit(1)
+
+    with open(path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    # Handle both formats: list of cards or dict with cards_data
+    if isinstance(data, list):
+        return data
+    elif isinstance(data, dict) and 'cards_data' in data:
+        return data['cards_data']
+    elif isinstance(data, dict) and 'cards' in data:
+        return data['cards']
+    else:
+        print("Error: Invalid cards file format")
+        sys.exit(1)
+
+
+def compare_cards_command(
+    cards_file: str,
+    card1_name: str,
+    card2_name: str,
+    category: Optional[str] = None
+):
+    """Compare two cards from a cards file"""
+    cards = load_cards_from_json(cards_file)
+
+    # Find the cards
+    card1 = None
+    card2 = None
+
+    for card in cards:
+        name = card.get('image_name', '')
+        if card1_name.lower() in name.lower():
+            card1 = card
+        if card2_name.lower() in name.lower():
+            card2 = card
+
+    if card1 is None:
+        print(f"Error: Card '{card1_name}' not found")
+        available = [c.get('image_name', '') for c in cards[:10]]
+        print(f"Available cards (first 10): {', '.join(available)}")
+        sys.exit(1)
+
+    if card2 is None:
+        print(f"Error: Card '{card2_name}' not found")
+        sys.exit(1)
+
+    result = compare_cards(card1, card2, category)
+    print_comparison_result(result)
+
+
+def battle_cards_command(
+    cards_file: str,
+    card1_name: str,
+    card2_name: str,
+    rounds: int = 5
+):
+    """Battle between two cards"""
+    cards = load_cards_from_json(cards_file)
+
+    # Find the cards
+    card1 = None
+    card2 = None
+
+    for card in cards:
+        name = card.get('image_name', '')
+        if card1_name.lower() in name.lower():
+            card1 = card
+        if card2_name.lower() in name.lower():
+            card2 = card
+
+    if card1 is None:
+        print(f"Error: Card '{card1_name}' not found")
+        sys.exit(1)
+
+    if card2 is None:
+        print(f"Error: Card '{card2_name}' not found")
+        sys.exit(1)
+
+    result = battle_cards(card1, card2, rounds)
+    print_battle_result(result)
+
+
+def show_rarity_command(cards_file: str, top_n: int = 10):
+    """Show rarity information for cards"""
+    cards = load_cards_from_json(cards_file)
+    enhanced = enhance_cards_with_gaming_stats(cards)
+
+    print("\n CARD RARITY RANKINGS")
+    print("=" * 60)
+
+    # Sort by rarity
+    sorted_cards = sorted(
+        enhanced,
+        key=lambda c: c.get('rarity_score', 0),
+        reverse=True
+    )
+
+    for i, card in enumerate(sorted_cards[:top_n], 1):
+        name = card.get('image_name', 'Unknown')
+        rarity = card.get('rarity_score', 0)
+        tier = card.get('rarity_tier', 'common')
+        symbol = card.get('rarity_symbol', '')
+        power = card.get('power_level', 0)
+
+        print(f"\n  {i}. {symbol} {name}")
+        print(f"     Rarity: {rarity:.1f} ({tier.title()})")
+        print(f"     Power:  {power:.1f}")
+
+    print()
+
+
+def show_stats_command(cards_file: str):
+    """Show collection statistics"""
+    cards = load_cards_from_json(cards_file)
+    stats = calculate_collection_stats(cards)
+    print_collection_stats(stats)
+
+
+def deck_create_command(
+    cards_file: str,
+    deck_name: str,
+    output_file: str,
+    card_names: Optional[List[str]] = None,
+    top_n: Optional[int] = None
+):
+    """Create a new deck from cards"""
+    cards = load_cards_from_json(cards_file)
+
+    if card_names:
+        # Select specific cards
+        selected = []
+        for name in card_names:
+            for card in cards:
+                if name.lower() in card.get('image_name', '').lower():
+                    selected.append(card)
+                    break
+        cards = selected
+    elif top_n:
+        # Select top N by power
+        enhanced = enhance_cards_with_gaming_stats(cards)
+        cards = sorted(
+            enhanced,
+            key=lambda c: c.get('power_level', 0),
+            reverse=True
+        )[:top_n]
+
+    deck = create_deck_from_cards(cards, name=deck_name)
+    saved_path = deck.save(output_file)
+
+    print(f"\n Deck created: {deck_name}")
+    print(f"   Cards: {deck.size()}")
+    print(f"   Saved to: {saved_path}")
+    print()
+
+
+def deck_show_command(deck_file: str, list_cards: bool = False):
+    """Show deck information"""
+    deck = Deck.load(deck_file)
+
+    if list_cards:
+        list_cards_in_deck(deck, show_stats=True)
+    else:
+        print_deck_info(deck)
+
+
+def deck_add_command(deck_file: str, cards_file: str, card_names: List[str]):
+    """Add cards to a deck"""
+    deck = Deck.load(deck_file)
+    cards = load_cards_from_json(cards_file)
+
+    added = 0
+    for name in card_names:
+        for card in cards:
+            if name.lower() in card.get('image_name', '').lower():
+                if deck.add_card(card):
+                    added += 1
+                    print(f"  Added: {card.get('image_name')}")
+                else:
+                    print(f"  Skipped (duplicate): {card.get('image_name')}")
+                break
+
+    deck.save(deck_file)
+    print(f"\n Added {added} cards to deck")
+    print(f" Deck now has {deck.size()} cards")
+
+
+def deck_remove_command(deck_file: str, card_names: List[str]):
+    """Remove cards from a deck"""
+    deck = Deck.load(deck_file)
+
+    removed = 0
+    for name in card_names:
+        if deck.remove_card(name):
+            removed += 1
+            print(f"  Removed: {name}")
+        else:
+            # Try partial match
+            for card in deck.cards:
+                if name.lower() in card.get('image_name', '').lower():
+                    if deck.remove_card(card.get('image_name')):
+                        removed += 1
+                        print(f"  Removed: {card.get('image_name')}")
+                    break
+
+    deck.save(deck_file)
+    print(f"\n Removed {removed} cards from deck")
+    print(f" Deck now has {deck.size()} cards")
+
+
+def export_pdf_command(
+    cards_file: str,
+    output_file: str,
+    page_size: str = "A4"
+):
+    """Export cards to PDF"""
+    if not check_pdf_support():
+        print("Error: PDF export requires reportlab")
+        print("Install with: pip install reportlab")
+        sys.exit(1)
+
+    cards = load_cards_from_json(cards_file)
+    export_cards_to_pdf(cards, output_file, page_size=page_size)
+
+
+def export_png_command(
+    cards_file: str,
+    output_dir: str
+):
+    """Export cards as PNG files"""
+    cards = load_cards_from_json(cards_file)
+    export_cards_to_png(cards, output_dir)
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -916,6 +1186,230 @@ Examples:
         help='Response language (default: en)'
     )
 
+    # -------------------------------------------------------------------------
+    # compare command (Gaming)
+    # -------------------------------------------------------------------------
+    compare_parser = subparsers.add_parser(
+        'compare',
+        help='Compare two cards to see who wins'
+    )
+    compare_parser.add_argument(
+        'cards_file',
+        help='JSON file with card data (from nimitz analyze)'
+    )
+    compare_parser.add_argument(
+        'card1',
+        help='First card name (partial match supported)'
+    )
+    compare_parser.add_argument(
+        'card2',
+        help='Second card name (partial match supported)'
+    )
+    compare_parser.add_argument(
+        '-c', '--category',
+        help='Specific characteristic to compare (default: overall power)'
+    )
+
+    # -------------------------------------------------------------------------
+    # battle command (Gaming)
+    # -------------------------------------------------------------------------
+    battle_parser = subparsers.add_parser(
+        'battle',
+        help='Full battle between two cards across multiple rounds'
+    )
+    battle_parser.add_argument(
+        'cards_file',
+        help='JSON file with card data'
+    )
+    battle_parser.add_argument(
+        'card1',
+        help='First card name'
+    )
+    battle_parser.add_argument(
+        'card2',
+        help='Second card name'
+    )
+    battle_parser.add_argument(
+        '-r', '--rounds',
+        type=int,
+        default=5,
+        help='Number of battle rounds (default: 5)'
+    )
+
+    # -------------------------------------------------------------------------
+    # rarity command (Gaming)
+    # -------------------------------------------------------------------------
+    rarity_parser = subparsers.add_parser(
+        'rarity',
+        help='Show card rarity rankings'
+    )
+    rarity_parser.add_argument(
+        'cards_file',
+        help='JSON file with card data'
+    )
+    rarity_parser.add_argument(
+        '-n', '--top',
+        type=int,
+        default=10,
+        help='Number of cards to show (default: 10)'
+    )
+
+    # -------------------------------------------------------------------------
+    # stats command (Gaming)
+    # -------------------------------------------------------------------------
+    stats_parser = subparsers.add_parser(
+        'stats',
+        help='Show collection statistics'
+    )
+    stats_parser.add_argument(
+        'cards_file',
+        help='JSON file with card data'
+    )
+
+    # -------------------------------------------------------------------------
+    # deck command (Gaming - with subcommands)
+    # -------------------------------------------------------------------------
+    deck_parser = subparsers.add_parser(
+        'deck',
+        help='Deck management (create, show, add, remove cards)',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Subcommands:
+  create    Create a new deck from cards
+  show      Show deck information
+  add       Add cards to a deck
+  remove    Remove cards from a deck
+
+Examples:
+  nimitz deck create cards.json --name "My Deck" -o my_deck.json
+  nimitz deck create cards.json --top 10 --name "Top 10" -o top_deck.json
+  nimitz deck show my_deck.json
+  nimitz deck show my_deck.json --list
+  nimitz deck add my_deck.json cards.json photo1.jpg photo2.jpg
+  nimitz deck remove my_deck.json photo1.jpg
+        """
+    )
+    deck_subparsers = deck_parser.add_subparsers(dest='deck_command', help='Deck subcommands')
+
+    # deck create
+    deck_create_parser = deck_subparsers.add_parser(
+        'create',
+        help='Create a new deck'
+    )
+    deck_create_parser.add_argument(
+        'cards_file',
+        help='JSON file with card data to choose from'
+    )
+    deck_create_parser.add_argument(
+        '-o', '--output',
+        required=True,
+        help='Output file for the deck'
+    )
+    deck_create_parser.add_argument(
+        '-n', '--name',
+        default='My Deck',
+        help='Deck name (default: My Deck)'
+    )
+    deck_create_parser.add_argument(
+        '--top',
+        type=int,
+        help='Select top N cards by power level'
+    )
+    deck_create_parser.add_argument(
+        '--cards',
+        nargs='+',
+        help='Specific card names to include'
+    )
+
+    # deck show
+    deck_show_parser = deck_subparsers.add_parser(
+        'show',
+        help='Show deck information'
+    )
+    deck_show_parser.add_argument(
+        'deck_file',
+        help='Deck file to show'
+    )
+    deck_show_parser.add_argument(
+        '-l', '--list',
+        action='store_true',
+        help='List all cards in deck'
+    )
+
+    # deck add
+    deck_add_parser = deck_subparsers.add_parser(
+        'add',
+        help='Add cards to a deck'
+    )
+    deck_add_parser.add_argument(
+        'deck_file',
+        help='Deck file to modify'
+    )
+    deck_add_parser.add_argument(
+        'cards_file',
+        help='JSON file with card data'
+    )
+    deck_add_parser.add_argument(
+        'card_names',
+        nargs='+',
+        help='Card names to add'
+    )
+
+    # deck remove
+    deck_remove_parser = deck_subparsers.add_parser(
+        'remove',
+        help='Remove cards from a deck'
+    )
+    deck_remove_parser.add_argument(
+        'deck_file',
+        help='Deck file to modify'
+    )
+    deck_remove_parser.add_argument(
+        'card_names',
+        nargs='+',
+        help='Card names to remove'
+    )
+
+    # -------------------------------------------------------------------------
+    # export-pdf command (Gaming)
+    # -------------------------------------------------------------------------
+    export_pdf_parser = subparsers.add_parser(
+        'export-pdf',
+        help='Export cards as printable PDF'
+    )
+    export_pdf_parser.add_argument(
+        'cards_file',
+        help='JSON file with card data (or deck file)'
+    )
+    export_pdf_parser.add_argument(
+        '-o', '--output',
+        default='cards.pdf',
+        help='Output PDF file (default: cards.pdf)'
+    )
+    export_pdf_parser.add_argument(
+        '--size',
+        choices=['A4', 'Letter'],
+        default='A4',
+        help='Page size (default: A4)'
+    )
+
+    # -------------------------------------------------------------------------
+    # export-png command (Gaming)
+    # -------------------------------------------------------------------------
+    export_png_parser = subparsers.add_parser(
+        'export-png',
+        help='Export cards as individual PNG files'
+    )
+    export_png_parser.add_argument(
+        'cards_file',
+        help='JSON file with card data'
+    )
+    export_png_parser.add_argument(
+        '-o', '--output',
+        default='./card_images',
+        help='Output directory (default: ./card_images)'
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -989,6 +1483,80 @@ Examples:
                 num_samples=args.samples,
                 language=args.lang
             )
+
+    # -------------------------------------------------------------------------
+    # Gaming commands
+    # -------------------------------------------------------------------------
+    elif args.command == 'compare':
+        compare_cards_command(
+            cards_file=args.cards_file,
+            card1_name=args.card1,
+            card2_name=args.card2,
+            category=args.category
+        )
+
+    elif args.command == 'battle':
+        battle_cards_command(
+            cards_file=args.cards_file,
+            card1_name=args.card1,
+            card2_name=args.card2,
+            rounds=args.rounds
+        )
+
+    elif args.command == 'rarity':
+        show_rarity_command(
+            cards_file=args.cards_file,
+            top_n=args.top
+        )
+
+    elif args.command == 'stats':
+        show_stats_command(args.cards_file)
+
+    elif args.command == 'deck':
+        if args.deck_command is None:
+            deck_parser.print_help()
+            sys.exit(0)
+
+        elif args.deck_command == 'create':
+            deck_create_command(
+                cards_file=args.cards_file,
+                deck_name=args.name,
+                output_file=args.output,
+                card_names=args.cards,
+                top_n=args.top
+            )
+
+        elif args.deck_command == 'show':
+            deck_show_command(
+                deck_file=args.deck_file,
+                list_cards=args.list
+            )
+
+        elif args.deck_command == 'add':
+            deck_add_command(
+                deck_file=args.deck_file,
+                cards_file=args.cards_file,
+                card_names=args.card_names
+            )
+
+        elif args.deck_command == 'remove':
+            deck_remove_command(
+                deck_file=args.deck_file,
+                card_names=args.card_names
+            )
+
+    elif args.command == 'export-pdf':
+        export_pdf_command(
+            cards_file=args.cards_file,
+            output_file=args.output,
+            page_size=args.size
+        )
+
+    elif args.command == 'export-png':
+        export_png_command(
+            cards_file=args.cards_file,
+            output_dir=args.output
+        )
 
 
 if __name__ == '__main__':
