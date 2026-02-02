@@ -84,6 +84,12 @@ Versione alternativa senza CLIP, usa solo un LLM multimodale.
 ### Note
 - Pro: più flessibile, no setup PyTorch
 - Contro: costi API, più lento
+- Usa `litellm` come proxy unificato per tutti i provider
+
+### Provider supportati
+- **Anthropic** (Claude Vision) - `ANTHROPIC_API_KEY`
+- **Google** (Gemini) - `GEMINI_API_KEY`
+- **OpenAI** (GPT-4V) - `OPENAI_API_KEY`
 
 ### Nuovi comandi CLI
 ```bash
@@ -92,8 +98,9 @@ nimitz llm status
 
 # Descrivi una singola immagine con LLM
 nimitz llm describe foto.jpg
-nimitz llm describe foto.jpg --provider anthropic  # forza provider
-nimitz llm describe foto.jpg --lang it  # risposta in italiano
+nimitz llm describe foto.jpg --provider gemini     # usa Gemini
+nimitz llm describe foto.jpg --provider anthropic  # usa Claude
+nimitz llm describe foto.jpg --lang it             # risposta in italiano
 
 # Analizza una directory con LLM
 nimitz llm analyze ./foto
@@ -105,8 +112,11 @@ nimitz llm vocab ./foto --samples 10  # usa più immagini di esempio
 ```
 
 ### Requisiti
-- Imposta `ANTHROPIC_API_KEY` o `OPENAI_API_KEY` come variabile d'ambiente
-- Installa il pacchetto corrispondente: `pip install anthropic` o `pip install openai`
+- Installa litellm: `pip install litellm`
+- Imposta almeno una delle variabili d'ambiente:
+  - `ANTHROPIC_API_KEY` per Claude
+  - `GEMINI_API_KEY` per Gemini
+  - `OPENAI_API_KEY` per GPT-4
 
 ---
 

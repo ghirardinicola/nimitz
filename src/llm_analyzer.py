@@ -1,42 +1,57 @@
 #!/usr/bin/env python3
 """
 NIMITZ - LLM Analyzer Module
-Image analysis using multimodal LLMs (GPT-4V / Claude Vision) instead of CLIP.
+Image analysis using multimodal LLMs (GPT-4V / Claude Vision / Gemini) instead of CLIP.
 
 This module provides an alternative to CLIP-based analysis, using LLMs
 to analyze images, generate vocabularies, and score characteristics.
+
+Uses litellm as a unified proxy for all LLM providers.
 """
 
 import base64
 import json
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 
 
 @dataclass
 class LLMConfig:
     """Configuration for LLM provider."""
-    provider: str  # "openai" or "anthropic"
-    model: str
+    provider: str  # "openai", "anthropic", or "gemini"
+    model: str     # litellm model string
     api_key: Optional[str] = None
     max_tokens: int = 4096
     temperature: float = 0.3
 
 
-# Default configurations
-OPENAI_CONFIG = LLMConfig(
-    provider="openai",
-    model="gpt-4o",
-    api_key=os.environ.get("OPENAI_API_KEY"),
-)
+# Default configurations (litellm model format)
+PROVIDER_CONFIGS = {
+    "openai": LLMConfig(
+        provider="openai",
+        model="gpt-4o",
+        api_key=os.environ.get("OPENAI_API_KEY"),
+    ),
+    "anthropic": LLMConfig(
+        provider="anthropic",
+        model="anthropic/claude-sonnet-4-20250514",
+        api_key=os.environ.get("ANTHROPIC_API_KEY"),
+    ),
+    "gemini": LLMConfig(
+        provider="gemini",
+        model="gemini/gemini-2.0-flash",
+        api_key=os.environ.get("GEMINI_API_KEY"),
+    ),
+}
 
-ANTHROPIC_CONFIG = LLMConfig(
-    provider="anthropic",
-    model="claude-sonnet-4-20250514",
-    api_key=os.environ.get("ANTHROPIC_API_KEY"),
-)
+# Environment variable names for each provider
+API_KEY_ENV_VARS = {
+    "openai": "OPENAI_API_KEY",
+    "anthropic": "ANTHROPIC_API_KEY",
+    "gemini": "GEMINI_API_KEY",
+}
 
 
 def get_llm_config(provider: str = "auto") -> LLMConfig:
@@ -44,31 +59,30 @@ def get_llm_config(provider: str = "auto") -> LLMConfig:
     Get LLM configuration based on provider or available API keys.
 
     Args:
-        provider: "openai", "anthropic", or "auto" (detect from env)
+        provider: "openai", "anthropic", "gemini", or "auto" (detect from env)
 
     Returns:
         LLMConfig for the selected provider
     """
     if provider == "auto":
-        # Prefer Anthropic if key is available, else OpenAI
-        if os.environ.get("ANTHROPIC_API_KEY"):
-            return ANTHROPIC_CONFIG
-        elif os.environ.get("OPENAI_API_KEY"):
-            return OPENAI_CONFIG
-        else:
-            raise ValueError(
-                "No API key found. Set ANTHROPIC_API_KEY or OPENAI_API_KEY environment variable."
-            )
-    elif provider == "openai":
-        if not os.environ.get("OPENAI_API_KEY"):
-            raise ValueError("OPENAI_API_KEY environment variable not set.")
-        return OPENAI_CONFIG
-    elif provider == "anthropic":
-        if not os.environ.get("ANTHROPIC_API_KEY"):
-            raise ValueError("ANTHROPIC_API_KEY environment variable not set.")
-        return ANTHROPIC_CONFIG
-    else:
-        raise ValueError(f"Unknown provider: {provider}. Use 'openai', 'anthropic', or 'auto'.")
+        # Check providers in order of preference
+        for prov in ["anthropic", "gemini", "openai"]:
+            env_var = API_KEY_ENV_VARS[prov]
+            if os.environ.get(env_var):
+                return PROVIDER_CONFIGS[prov]
+        raise ValueError(
+            "No API key found. Set one of: ANTHROPIC_API_KEY, GEMINI_API_KEY, or OPENAI_API_KEY"
+        )
+
+    if provider not in PROVIDER_CONFIGS:
+        valid = ", ".join(PROVIDER_CONFIGS.keys())
+        raise ValueError(f"Unknown provider: {provider}. Use one of: {valid}, or 'auto'.")
+
+    env_var = API_KEY_ENV_VARS[provider]
+    if not os.environ.get(env_var):
+        raise ValueError(f"{env_var} environment variable not set.")
+
+    return PROVIDER_CONFIGS[provider]
 
 
 def encode_image_base64(image_path: Path) -> str:
@@ -90,40 +104,49 @@ def get_image_media_type(image_path: Path) -> str:
     return media_types.get(ext, "image/jpeg")
 
 
-def call_openai(
+def call_llm(
     config: LLMConfig,
     prompt: str,
     image_path: Optional[Path] = None
 ) -> str:
-    """Call OpenAI API with optional image."""
+    """
+    Call LLM API using litellm as unified proxy.
+
+    Args:
+        config: LLM configuration
+        prompt: Text prompt
+        image_path: Optional path to image for vision models
+
+    Returns:
+        LLM response text
+    """
     try:
-        from openai import OpenAI
+        import litellm
     except ImportError:
-        raise ImportError("openai package not installed. Run: pip install openai")
+        raise ImportError(
+            "litellm package not installed. Run: pip install litellm"
+        )
 
-    client = OpenAI(api_key=config.api_key or os.environ.get("OPENAI_API_KEY"))
-
-    messages = []
-
+    # Build message content
     if image_path:
         base64_image = encode_image_base64(image_path)
         media_type = get_image_media_type(image_path)
-        messages.append({
-            "role": "user",
-            "content": [
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": f"data:{media_type};base64,{base64_image}"
-                    }
-                },
-                {"type": "text", "text": prompt}
-            ]
-        })
+        content = [
+            {
+                "type": "image_url",
+                "image_url": {
+                    "url": f"data:{media_type};base64,{base64_image}"
+                }
+            },
+            {"type": "text", "text": prompt}
+        ]
     else:
-        messages.append({"role": "user", "content": prompt})
+        content = prompt
 
-    response = client.chat.completions.create(
+    messages = [{"role": "user", "content": content}]
+
+    # Call litellm
+    response = litellm.completion(
         model=config.model,
         messages=messages,
         max_tokens=config.max_tokens,
@@ -131,58 +154,6 @@ def call_openai(
     )
 
     return response.choices[0].message.content
-
-
-def call_anthropic(
-    config: LLMConfig,
-    prompt: str,
-    image_path: Optional[Path] = None
-) -> str:
-    """Call Anthropic API with optional image."""
-    try:
-        import anthropic
-    except ImportError:
-        raise ImportError("anthropic package not installed. Run: pip install anthropic")
-
-    client = anthropic.Anthropic(api_key=config.api_key or os.environ.get("ANTHROPIC_API_KEY"))
-
-    content = []
-
-    if image_path:
-        base64_image = encode_image_base64(image_path)
-        media_type = get_image_media_type(image_path)
-        content.append({
-            "type": "image",
-            "source": {
-                "type": "base64",
-                "media_type": media_type,
-                "data": base64_image,
-            }
-        })
-
-    content.append({"type": "text", "text": prompt})
-
-    response = client.messages.create(
-        model=config.model,
-        max_tokens=config.max_tokens,
-        messages=[{"role": "user", "content": content}]
-    )
-
-    return response.content[0].text
-
-
-def call_llm(
-    config: LLMConfig,
-    prompt: str,
-    image_path: Optional[Path] = None
-) -> str:
-    """Call LLM API based on provider config."""
-    if config.provider == "openai":
-        return call_openai(config, prompt, image_path)
-    elif config.provider == "anthropic":
-        return call_anthropic(config, prompt, image_path)
-    else:
-        raise ValueError(f"Unknown provider: {config.provider}")
 
 
 # =============================================================================
@@ -667,16 +638,16 @@ def check_llm_availability() -> Dict[str, bool]:
     return {
         "openai": bool(os.environ.get("OPENAI_API_KEY")),
         "anthropic": bool(os.environ.get("ANTHROPIC_API_KEY")),
+        "gemini": bool(os.environ.get("GEMINI_API_KEY")),
     }
 
 
 def get_available_provider() -> Optional[str]:
     """Get the first available LLM provider."""
     availability = check_llm_availability()
-    if availability["anthropic"]:
-        return "anthropic"
-    elif availability["openai"]:
-        return "openai"
+    for provider in ["anthropic", "gemini", "openai"]:
+        if availability[provider]:
+            return provider
     return None
 
 
@@ -688,5 +659,8 @@ def print_llm_status():
     for provider, available in availability.items():
         status = "Available" if available else "Not configured"
         icon = "" if available else ""
-        print(f"  {icon} {provider.capitalize()}: {status}")
+        env_var = API_KEY_ENV_VARS.get(provider, "")
+        print(f"  {icon} {provider.capitalize():10} {status:15} ({env_var})")
+    print()
+    print("  Install litellm: pip install litellm")
     print()

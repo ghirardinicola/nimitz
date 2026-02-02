@@ -826,7 +826,7 @@ Examples:
     )
     llm_describe_parser.add_argument(
         '--provider',
-        choices=['openai', 'anthropic', 'auto'],
+        choices=['openai', 'anthropic', 'gemini', 'auto'],
         default='auto',
         help='LLM provider (default: auto)'
     )
@@ -863,7 +863,7 @@ Examples:
     )
     llm_analyze_parser.add_argument(
         '--provider',
-        choices=['openai', 'anthropic', 'auto'],
+        choices=['openai', 'anthropic', 'gemini', 'auto'],
         default='auto',
         help='LLM provider (default: auto)'
     )
@@ -899,7 +899,7 @@ Examples:
     )
     llm_vocab_parser.add_argument(
         '--provider',
-        choices=['openai', 'anthropic', 'auto'],
+        choices=['openai', 'anthropic', 'gemini', 'auto'],
         default='auto',
         help='LLM provider (default: auto)'
     )

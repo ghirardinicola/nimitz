@@ -200,20 +200,29 @@ nimitz validate mio_vocabolario.json
 
 ## Modalità LLM (senza CLIP)
 
-NIMITZ supporta anche l'analisi tramite LLM multimodali (GPT-4V / Claude Vision), senza bisogno di CLIP o PyTorch.
+NIMITZ supporta anche l'analisi tramite LLM multimodali (GPT-4V / Claude Vision / Gemini), senza bisogno di CLIP o PyTorch.
+
+Usa `litellm` come proxy unificato per tutti i provider.
 
 ### Setup
 
 ```bash
-# Imposta la chiave API (una delle due)
-export ANTHROPIC_API_KEY="your-key"
-# oppure
-export OPENAI_API_KEY="your-key"
+# Installa litellm
+pip install litellm
 
-# Installa il pacchetto corrispondente
-pip install anthropic  # per Claude
-pip install openai     # per GPT-4
+# Imposta la chiave API per il provider che vuoi usare
+export ANTHROPIC_API_KEY="your-key"  # per Claude
+export GEMINI_API_KEY="your-key"     # per Gemini
+export OPENAI_API_KEY="your-key"     # per GPT-4
 ```
+
+### Provider supportati
+
+| Provider | Modello | Variabile d'ambiente |
+|----------|---------|---------------------|
+| Anthropic | Claude Sonnet | `ANTHROPIC_API_KEY` |
+| Google | Gemini 2.0 Flash | `GEMINI_API_KEY` |
+| OpenAI | GPT-4o | `OPENAI_API_KEY` |
 
 ### Comandi LLM
 
@@ -223,7 +232,8 @@ nimitz llm status
 
 # Descrivi una singola immagine
 nimitz llm describe foto.jpg
-nimitz llm describe foto.jpg --lang it  # risposta in italiano
+nimitz llm describe foto.jpg --provider gemini  # usa Gemini
+nimitz llm describe foto.jpg --lang it          # risposta in italiano
 
 # Analizza una directory di immagini
 nimitz llm analyze ./foto --preset photography
