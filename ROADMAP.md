@@ -218,14 +218,23 @@ nimitz retrieve batch players.txt --source pexels    # Usa Pexels invece di Unsp
 nimitz retrieve batch players.txt --no-clip          # Disabilita selezione CLIP
 nimitz retrieve batch players.txt --no-analyze       # Solo scarica, non analizzare
 nimitz retrieve batch players.txt --cache ./cache    # Directory cache custom
+
+# 🆕 Web Discovery - trova automaticamente i nomi online!
+nimitz retrieve discover "Parma Clima Baseball roster" -o players.txt
+nimitz retrieve discover "San Francisco Giants 2024" -o giants.txt --template "{name}, baseball player"
+nimitz retrieve discover "Italian Renaissance painters" -o painters.json --auto  # Auto-retrieve dopo discovery
 ```
 
 ### Requisiti
-- API Key richiesta (almeno una):
+- **Per Image Retrieval** - API Key richiesta (almeno una):
   - **Unsplash**: `UNSPLASH_ACCESS_KEY` (gratuita, ottima qualità)
     - Registrati su: https://unsplash.com/developers
   - **Pexels**: `PEXELS_API_KEY` (gratuita, ottima qualità)
     - Registrati su: https://www.pexels.com/api/
+
+- **Per Web Discovery** (opzionale):
+  - **Brave Search**: `BRAVE_API_KEY` (2,000 query/mese gratis)
+    - Registrati su: https://brave.com/search/api/
 
 ### Caratteristiche implementate
 - **Multi-source**: Supporto Unsplash e Pexels con licenze permissive
@@ -235,6 +244,7 @@ nimitz retrieve batch players.txt --cache ./cache    # Directory cache custom
 - **Placeholder Fallback**: Genera immagini placeholder per ricerche fallite
 - **Batch Processing**: Processa liste di descrizioni da file .txt, .csv, o .json
 - **Full Pipeline**: Integrazione completa con analisi CLIP e generazione carte
+- **🆕 Web Discovery**: Scopre automaticamente entità (giocatori, persone, etc.) da ricerche web con Brave Search
 
 ---
 

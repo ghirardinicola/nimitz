@@ -200,6 +200,7 @@ nimitz validate mio_vocabolario.json
 | `retrieve status` | - | Verifica configurazione API image retrieval |
 | `retrieve single` | `description` | Recupera singola immagine da descrizione |
 | `retrieve batch` | `file` | Recupera immagini da file (.txt, .csv, .json) |
+| `retrieve discover` | `query` | 🆕 Scopri entità da web search e crea batch file |
 
 ## Modalità LLM (senza CLIP)
 
@@ -293,6 +294,19 @@ nimitz retrieve batch players.txt --source pexels    # Usa Pexels invece di Unsp
 nimitz retrieve batch players.txt --no-clip          # Disabilita selezione CLIP
 nimitz retrieve batch players.txt --no-analyze       # Solo scarica, non analizzare
 nimitz retrieve batch players.txt --cache ./cache    # Directory cache personalizzata
+
+# 🆕 Web Discovery - Scopri automaticamente i nomi online!
+# Richiede BRAVE_API_KEY (2,000 query/mese gratis: https://brave.com/search/api/)
+export BRAVE_API_KEY="your-brave-key"
+
+# Trova automaticamente i giocatori e genera il file batch
+nimitz retrieve discover "Parma Clima Baseball roster" -o players.txt
+
+# Con template personalizzato per descrizioni più ricche
+nimitz retrieve discover "San Francisco Giants 2024" -o giants.txt --template "{name}, baseball player"
+
+# Auto-mode: scopri + recupera immagini + genera carte in un solo comando!
+nimitz retrieve discover "Italian Renaissance painters" -o painters.json --auto --preset art
 ```
 
 ### Caratteristiche
@@ -304,6 +318,7 @@ nimitz retrieve batch players.txt --cache ./cache    # Directory cache personali
 - **Placeholder Fallback**: Genera immagini placeholder per ricerche fallite
 - **Batch Processing**: Processa liste da file .txt, .csv, o .json
 - **Full Pipeline**: Integrazione completa con analisi CLIP e generazione carte
+- **🆕 Web Discovery**: Scopri automaticamente entità (giocatori, persone, etc.) da ricerche web usando Brave Search
 
 ### Esempio completo
 

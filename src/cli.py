@@ -76,6 +76,12 @@ from image_retrieval import (
     create_placeholder_image,
     ImageRetrievalError,
 )
+from web_discovery import (
+    discover_with_refinement,
+    check_brave_api_key,
+    get_brave_api_info,
+    WebDiscoveryError,
+)
 
 
 def describe_single_image(
@@ -1262,6 +1268,87 @@ def retrieve_batch_command(
         print(f"   Visual cards: {visual_output}/")
 
 
+def retrieve_discover_command(
+    query: str,
+    output_file: str,
+    template: Optional[str] = None,
+    max_results: int = 20,
+    interactive: bool = True,
+    auto_retrieve: bool = False,
+    preset: str = 'photography',
+    source: str = 'unsplash'
+):
+    """Discover entities from web search and generate batch file"""
+    import os
+
+    # Check Brave API key
+    if not check_brave_api_key():
+        print("\n✗ Error: Brave Search API not configured")
+        print(get_brave_api_info())
+        sys.exit(1)
+
+    print("\n" + "=" * 60)
+    print("  NIMITZ - Web Discovery")
+    print("  Automatically discover entities from web search")
+    print("=" * 60)
+
+    try:
+        # Discover and generate batch file
+        entities = discover_with_refinement(
+            initial_query=query,
+            output_file=output_file,
+            description_template=template,
+            max_results=max_results,
+            interactive=interactive
+        )
+
+        print(f"\n✓ Discovery complete!")
+        print(f"   Found: {len(entities)} entities")
+        print(f"   Saved to: {output_file}")
+
+        # Optionally auto-retrieve images
+        if auto_retrieve:
+            print(f"\n Starting automatic image retrieval...")
+
+            # Check image retrieval API
+            sources = check_api_credentials()
+            if not sources.get(source.lower()):
+                print(f"\n⚠ Warning: {source} API not configured")
+                print(f"Skipping automatic retrieval. Run manually with:")
+                print(f"  nimitz retrieve batch {output_file} --source {source} --preset {preset}")
+                return
+
+            # Run batch retrieval
+            output_dir = os.path.splitext(output_file)[0] + '_cards'
+            print(f"\n Retrieving images and generating cards...")
+            print(f" Output directory: {output_dir}")
+
+            retrieve_batch_command(
+                descriptions_file=output_file,
+                output_dir=output_dir,
+                preset=preset,
+                source=source,
+                cache_dir=None,
+                use_clip=True,
+                analyze=True,
+                use_placeholder=True
+            )
+
+        else:
+            print(f"\n Next steps:")
+            print(f"   1. Review {output_file}")
+            print(f"   2. Run: nimitz retrieve batch {output_file}")
+
+    except WebDiscoveryError as e:
+        print(f"\n✗ Discovery Error: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n✗ Unexpected Error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -1752,14 +1839,16 @@ Examples:
 Image Retrieval: Create cards from text descriptions by fetching images from the web.
 
 Subcommands:
-  status   Check API configuration status
-  single   Retrieve a single image
-  batch    Retrieve multiple images from file
+  status    Check API configuration status
+  single    Retrieve a single image
+  batch     Retrieve multiple images from file
+  discover  Discover entities from web search and create batch file
 
 Examples:
   nimitz retrieve status
   nimitz retrieve single "Golden Gate Bridge at sunset"
   nimitz retrieve batch players.txt --preset art
+  nimitz retrieve discover "Parma Clima Baseball roster" -o players.txt --auto
         """
     )
     retrieve_subparsers = retrieve_parser.add_subparsers(dest='retrieve_command', help='Retrieve subcommands')
@@ -1853,6 +1942,59 @@ Examples:
         '--no-placeholder',
         action='store_true',
         help='Skip creating placeholder images for failed retrievals'
+    )
+
+    # retrieve discover
+    retrieve_discover_parser = retrieve_subparsers.add_parser(
+        'discover',
+        help='Discover entities from web search and create batch file',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  nimitz retrieve discover "Parma Clima Baseball team roster" -o players.txt
+  nimitz retrieve discover "San Francisco Giants 2024" -o giants.txt --template "{name}, baseball player"
+  nimitz retrieve discover "Italian Renaissance painters" -o painters.json --auto
+        """
+    )
+    retrieve_discover_parser.add_argument(
+        'query',
+        help='Search query to discover entities'
+    )
+    retrieve_discover_parser.add_argument(
+        '-o', '--output',
+        required=True,
+        help='Output file for discovered entities (.txt, .json, .csv)'
+    )
+    retrieve_discover_parser.add_argument(
+        '-t', '--template',
+        help='Description template (use {name} placeholder, e.g., "{name}, baseball player")'
+    )
+    retrieve_discover_parser.add_argument(
+        '-n', '--max-results',
+        type=int,
+        default=20,
+        help='Maximum number of entities to discover (default: 20)'
+    )
+    retrieve_discover_parser.add_argument(
+        '--no-interactive',
+        action='store_true',
+        help='Skip interactive selection'
+    )
+    retrieve_discover_parser.add_argument(
+        '--auto',
+        action='store_true',
+        help='Automatically retrieve images after discovery'
+    )
+    retrieve_discover_parser.add_argument(
+        '-p', '--preset',
+        default='photography',
+        help='Preset for auto-retrieval (default: photography)'
+    )
+    retrieve_discover_parser.add_argument(
+        '-s', '--source',
+        choices=['unsplash', 'pexels'],
+        default='unsplash',
+        help='Source for auto-retrieval (default: unsplash)'
     )
 
     # Parse arguments
@@ -2035,6 +2177,18 @@ Examples:
                 use_clip=not args.no_clip,
                 analyze=not args.no_analyze,
                 use_placeholder=not args.no_placeholder
+            )
+
+        elif args.retrieve_command == 'discover':
+            retrieve_discover_command(
+                query=args.query,
+                output_file=args.output,
+                template=args.template,
+                max_results=args.max_results,
+                interactive=not args.no_interactive,
+                auto_retrieve=args.auto,
+                preset=args.preset,
+                source=args.source
             )
 
 
