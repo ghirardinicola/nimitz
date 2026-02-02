@@ -26,6 +26,8 @@ try:
     REPORTLAB_AVAILABLE = True
 except ImportError:
     REPORTLAB_AVAILABLE = False
+    # Define fallback values for module-level constants
+    mm = 2.834645669291339  # 1mm in points
 
 from gaming import (
     calculate_power_level,
