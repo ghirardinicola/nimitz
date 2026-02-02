@@ -7,7 +7,7 @@ Usage-friendly CLI for image analysis and card generation
 import argparse
 import sys
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 from core import (
     load_images,
@@ -68,6 +68,13 @@ from pdf_export import (
     export_single_card_pdf,
     export_cards_to_png,
     print_pdf_export_info,
+)
+from image_retrieval import (
+    retrieve_image,
+    batch_retrieve_images,
+    check_api_credentials,
+    create_placeholder_image,
+    ImageRetrievalError,
 )
 
 
@@ -931,6 +938,330 @@ def export_png_command(
     export_cards_to_png(cards, output_dir)
 
 
+def retrieve_status_command():
+    """Show image retrieval API status"""
+    import os
+
+    print("\n Image Retrieval API Status")
+    print("=" * 50)
+
+    sources = check_api_credentials()
+
+    for source, available in sources.items():
+        status = "✓ Available" if available else "✗ Not configured"
+        print(f"\n{source.capitalize()}: {status}")
+
+        if not available:
+            if source == 'unsplash':
+                print("  Set UNSPLASH_ACCESS_KEY environment variable")
+                print("  Get key at: https://unsplash.com/developers")
+            elif source == 'pexels':
+                print("  Set PEXELS_API_KEY environment variable")
+                print("  Get key at: https://www.pexels.com/api/")
+
+    print("\n" + "=" * 50)
+
+    if not any(sources.values()):
+        print("\n⚠ No image sources configured!")
+        print("Configure at least one API key to use image retrieval.")
+        sys.exit(1)
+
+
+def retrieve_single_command(
+    description: str,
+    output_dir: str = './nimitz_output',
+    preset: str = 'photography',
+    source: str = 'unsplash',
+    cache_dir: Optional[str] = None,
+    use_clip: bool = True,
+    analyze: bool = True
+):
+    """Retrieve a single image and optionally analyze it"""
+    import os
+    import json
+
+    # Check API credentials
+    sources = check_api_credentials()
+    if not sources.get(source.lower()):
+        print(f"\n✗ Error: {source} API not configured")
+        print(f"Set {source.upper()}_ACCESS_KEY or {source.upper()}_API_KEY environment variable")
+        sys.exit(1)
+
+    # Create output directory
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Set up cache
+    if cache_dir is None:
+        cache_dir = os.path.expanduser('~/.nimitz_cache')
+
+    print(f"\n Retrieving image for: {description}")
+    print(f" Source: {source}")
+    print(f" Output: {output_dir}")
+
+    # Initialize CLIP if needed for selection
+    model, device = None, None
+    characteristics = None
+
+    if use_clip:
+        try:
+            characteristics = get_preset_characteristics(preset)
+            model, device = initialize_clip_model()
+            print(" Using CLIP for image selection")
+        except Exception as e:
+            print(f" Warning: CLIP not available ({e}), using first result")
+            use_clip = False
+
+    # Retrieve image
+    try:
+        image_path, metadata = retrieve_image(
+            description=description,
+            output_dir=output_dir,
+            source_name=source,
+            cache_dir=cache_dir,
+            characteristics=characteristics,
+            model=model,
+            device=device,
+            num_candidates=5
+        )
+
+        print(f"\n✓ Image retrieved successfully!")
+        print(f"   Path: {image_path}")
+        print(f"   Author: {metadata['author']}")
+        print(f"   License: {metadata['license']}")
+        print(f"   Attribution: {metadata['attribution']}")
+
+        # Save metadata
+        metadata_path = os.path.join(output_dir, 'metadata.json')
+        metadata_list = []
+        if os.path.exists(metadata_path):
+            with open(metadata_path, 'r') as f:
+                metadata_list = json.load(f)
+
+        metadata_list.append({
+            'description': description,
+            'image_path': image_path,
+            'metadata': metadata
+        })
+
+        with open(metadata_path, 'w') as f:
+            json.dump(metadata_list, f, indent=2)
+
+        # Optionally analyze the image
+        if analyze:
+            print(f"\n Analyzing retrieved image...")
+            describe_single_image(image_path, preset=preset, verbose=True)
+
+    except ImageRetrievalError as e:
+        print(f"\n✗ Error: {e}")
+        sys.exit(1)
+
+
+def retrieve_batch_command(
+    descriptions_file: str,
+    output_dir: str = './nimitz_output',
+    preset: str = 'photography',
+    source: str = 'unsplash',
+    cache_dir: Optional[str] = None,
+    use_clip: bool = True,
+    analyze: bool = True,
+    use_placeholder: bool = True
+):
+    """Retrieve multiple images and generate cards"""
+    import os
+    import json
+    from tqdm import tqdm
+
+    # Check API credentials
+    sources = check_api_credentials()
+    if not sources.get(source.lower()):
+        print(f"\n✗ Error: {source} API not configured")
+        print(f"Set {source.upper()}_ACCESS_KEY or {source.upper()}_API_KEY environment variable")
+        sys.exit(1)
+
+    # Load descriptions
+    descriptions = []
+    descriptions_path = Path(descriptions_file)
+
+    if not descriptions_path.exists():
+        print(f"✗ Error: File not found: {descriptions_file}")
+        sys.exit(1)
+
+    # Support different file formats
+    if descriptions_path.suffix == '.json':
+        with open(descriptions_path, 'r') as f:
+            data = json.load(f)
+            if isinstance(data, list):
+                descriptions = data
+            elif isinstance(data, dict) and 'descriptions' in data:
+                descriptions = data['descriptions']
+            else:
+                print("✗ Error: JSON must be a list or have 'descriptions' key")
+                sys.exit(1)
+    elif descriptions_path.suffix in ['.txt', '.csv']:
+        with open(descriptions_path, 'r') as f:
+            descriptions = [line.strip() for line in f if line.strip()]
+    else:
+        print(f"✗ Error: Unsupported file format: {descriptions_path.suffix}")
+        print("Supported formats: .txt, .csv, .json")
+        sys.exit(1)
+
+    if not descriptions:
+        print("✗ Error: No descriptions found in file")
+        sys.exit(1)
+
+    print(f"\n Image Retrieval Batch Processing")
+    print("=" * 50)
+    print(f" Descriptions: {len(descriptions)}")
+    print(f" Source: {source}")
+    print(f" Output: {output_dir}")
+    print(f" Preset: {preset}")
+    print("=" * 50)
+
+    # Create output directory
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Set up cache
+    if cache_dir is None:
+        cache_dir = os.path.expanduser('~/.nimitz_cache')
+
+    # Initialize CLIP if needed
+    model, device = None, None
+    characteristics = None
+
+    if use_clip or analyze:
+        try:
+            characteristics = get_preset_characteristics(preset)
+            model, device = initialize_clip_model()
+            if use_clip:
+                print(" Using CLIP for image selection")
+        except Exception as e:
+            print(f" Warning: CLIP not available ({e})")
+            use_clip = False
+
+    # Retrieve images
+    print(f"\n Retrieving images...")
+    results = batch_retrieve_images(
+        descriptions=descriptions,
+        output_dir=output_dir,
+        source_name=source,
+        cache_dir=cache_dir,
+        characteristics=characteristics if use_clip else None,
+        model=model,
+        device=device,
+        num_candidates=5 if use_clip else 1
+    )
+
+    # Handle failed retrievals with placeholders
+    successful = []
+    failed = []
+
+    for description, image_path, metadata in results:
+        if image_path and os.path.exists(image_path):
+            successful.append((description, image_path, metadata))
+        else:
+            failed.append((description, metadata))
+
+            if use_placeholder:
+                # Create placeholder image
+                placeholder_path = os.path.join(
+                    output_dir,
+                    f"placeholder_{len(failed)}.jpg"
+                )
+                if create_placeholder_image(placeholder_path, description):
+                    print(f" Created placeholder for: {description}")
+                    successful.append((description, placeholder_path, {
+                        'source': 'placeholder',
+                        'description': description,
+                        'error': metadata.get('error', 'Unknown error')
+                    }))
+
+    # Save metadata
+    metadata_path = os.path.join(output_dir, 'retrieval_metadata.json')
+    with open(metadata_path, 'w') as f:
+        json.dump([
+            {
+                'description': desc,
+                'image_path': path,
+                'metadata': meta
+            }
+            for desc, path, meta in successful
+        ], f, indent=2)
+
+    print(f"\n Retrieval complete!")
+    print(f"   Successful: {len(successful)}")
+    print(f"   Failed: {len(failed)}")
+    print(f"   Metadata: {metadata_path}")
+
+    # Analyze images if requested
+    if analyze and successful:
+        print(f"\n Analyzing retrieved images...")
+
+        image_paths = [path for _, path, _ in successful]
+
+        if not characteristics:
+            characteristics = get_preset_characteristics(preset)
+        if not model:
+            model, device = initialize_clip_model()
+
+        # Extract features
+        image_features = extract_image_features(image_paths, model, device)
+
+        # Generate text features for all prompts
+        all_prompts = []
+        prompt_char_map = []
+        for char_name, char_data in characteristics.items():
+            for prompt in char_data['prompts']:
+                all_prompts.append(prompt)
+                prompt_char_map.append(char_name)
+
+        text_features = extract_text_features(all_prompts, model, device)
+        similarity_matrix = compute_similarity_matrices(
+            image_features,
+            text_features,
+            characteristics
+        )
+
+        # Generate cards
+        cards = generate_image_cards_data(
+            image_paths,
+            similarity_matrix,
+            characteristics
+        )
+
+        # Add retrieval metadata to cards
+        for i, card in enumerate(cards):
+            if i < len(successful):
+                desc, _, meta = successful[i]
+                card['retrieval_metadata'] = {
+                    'description': desc,
+                    'source': meta.get('source', 'unknown'),
+                    'author': meta.get('author'),
+                    'license': meta.get('license'),
+                    'attribution': meta.get('attribution'),
+                    'source_url': meta.get('source_url')
+                }
+
+        # Enhance with gaming stats
+        cards = enhance_cards_with_gaming_stats(cards)
+
+        # Export results
+        cards_json_path = os.path.join(output_dir, 'cards.json')
+        with open(cards_json_path, 'w') as f:
+            json.dump(cards, f, indent=2)
+
+        cards_csv_path = os.path.join(output_dir, 'cards.csv')
+        export_cards_to_csv(cards, cards_csv_path)
+
+        print(f"\n Cards generated!")
+        print(f"   JSON: {cards_json_path}")
+        print(f"   CSV: {cards_csv_path}")
+
+        # Create visual cards
+        visual_output = os.path.join(output_dir, 'visual_cards')
+        create_visual_image_cards(cards, visual_output)
+        print(f"   Visual cards: {visual_output}/")
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -1410,6 +1741,120 @@ Examples:
         help='Output directory (default: ./card_images)'
     )
 
+    # -------------------------------------------------------------------------
+    # retrieve command (Image Retrieval)
+    # -------------------------------------------------------------------------
+    retrieve_parser = subparsers.add_parser(
+        'retrieve',
+        help='Retrieve images from the web and generate cards',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Image Retrieval: Create cards from text descriptions by fetching images from the web.
+
+Subcommands:
+  status   Check API configuration status
+  single   Retrieve a single image
+  batch    Retrieve multiple images from file
+
+Examples:
+  nimitz retrieve status
+  nimitz retrieve single "Golden Gate Bridge at sunset"
+  nimitz retrieve batch players.txt --preset art
+        """
+    )
+    retrieve_subparsers = retrieve_parser.add_subparsers(dest='retrieve_command', help='Retrieve subcommands')
+
+    # retrieve status
+    retrieve_subparsers.add_parser(
+        'status',
+        help='Check image retrieval API configuration'
+    )
+
+    # retrieve single
+    retrieve_single_parser = retrieve_subparsers.add_parser(
+        'single',
+        help='Retrieve a single image by description'
+    )
+    retrieve_single_parser.add_argument(
+        'description',
+        help='Text description of the image to retrieve'
+    )
+    retrieve_single_parser.add_argument(
+        '-o', '--output',
+        default='./nimitz_output',
+        help='Output directory (default: ./nimitz_output)'
+    )
+    retrieve_single_parser.add_argument(
+        '-p', '--preset',
+        default='photography',
+        help='Vocabulary preset (default: photography)'
+    )
+    retrieve_single_parser.add_argument(
+        '-s', '--source',
+        choices=['unsplash', 'pexels'],
+        default='unsplash',
+        help='Image source (default: unsplash)'
+    )
+    retrieve_single_parser.add_argument(
+        '--cache',
+        help='Cache directory (default: ~/.nimitz_cache)'
+    )
+    retrieve_single_parser.add_argument(
+        '--no-clip',
+        action='store_true',
+        help='Disable CLIP-based image selection'
+    )
+    retrieve_single_parser.add_argument(
+        '--no-analyze',
+        action='store_true',
+        help='Skip image analysis after retrieval'
+    )
+
+    # retrieve batch
+    retrieve_batch_parser = retrieve_subparsers.add_parser(
+        'batch',
+        help='Retrieve multiple images from a file'
+    )
+    retrieve_batch_parser.add_argument(
+        'descriptions_file',
+        help='File with descriptions (.txt, .csv, or .json)'
+    )
+    retrieve_batch_parser.add_argument(
+        '-o', '--output',
+        default='./nimitz_output',
+        help='Output directory (default: ./nimitz_output)'
+    )
+    retrieve_batch_parser.add_argument(
+        '-p', '--preset',
+        default='photography',
+        help='Vocabulary preset (default: photography)'
+    )
+    retrieve_batch_parser.add_argument(
+        '-s', '--source',
+        choices=['unsplash', 'pexels'],
+        default='unsplash',
+        help='Image source (default: unsplash)'
+    )
+    retrieve_batch_parser.add_argument(
+        '--cache',
+        help='Cache directory (default: ~/.nimitz_cache)'
+    )
+    retrieve_batch_parser.add_argument(
+        '--no-clip',
+        action='store_true',
+        help='Disable CLIP-based image selection'
+    )
+    retrieve_batch_parser.add_argument(
+        '--no-analyze',
+        action='store_true',
+        help='Skip card generation (only retrieve images)'
+    )
+    retrieve_batch_parser.add_argument(
+        '--no-placeholder',
+        action='store_true',
+        help='Skip creating placeholder images for failed retrievals'
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -1557,6 +2002,40 @@ Examples:
             cards_file=args.cards_file,
             output_dir=args.output
         )
+
+    # -------------------------------------------------------------------------
+    # Image Retrieval commands
+    # -------------------------------------------------------------------------
+    elif args.command == 'retrieve':
+        if args.retrieve_command is None:
+            retrieve_parser.print_help()
+            sys.exit(0)
+
+        elif args.retrieve_command == 'status':
+            retrieve_status_command()
+
+        elif args.retrieve_command == 'single':
+            retrieve_single_command(
+                description=args.description,
+                output_dir=args.output,
+                preset=args.preset,
+                source=args.source,
+                cache_dir=args.cache,
+                use_clip=not args.no_clip,
+                analyze=not args.no_analyze
+            )
+
+        elif args.retrieve_command == 'batch':
+            retrieve_batch_command(
+                descriptions_file=args.descriptions_file,
+                output_dir=args.output,
+                preset=args.preset,
+                source=args.source,
+                cache_dir=args.cache,
+                use_clip=not args.no_clip,
+                analyze=not args.no_analyze,
+                use_placeholder=not args.no_placeholder
+            )
 
 
 if __name__ == '__main__':

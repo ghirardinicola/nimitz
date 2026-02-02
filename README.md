@@ -197,6 +197,9 @@ nimitz validate mio_vocabolario.json
 | `llm describe` | `image` | Immagine da analizzare con LLM |
 | `llm analyze` | `directory` | Directory da analizzare con LLM |
 | `llm vocab` | `directory` | Genera vocabolario con LLM |
+| `retrieve status` | - | Verifica configurazione API image retrieval |
+| `retrieve single` | `description` | Recupera singola immagine da descrizione |
+| `retrieve batch` | `file` | Recupera immagini da file (.txt, .csv, .json) |
 
 ## Modalità LLM (senza CLIP)
 
@@ -249,6 +252,80 @@ nimitz llm vocab ./foto -o mio_vocabolario.json
 |----------|-----|--------|
 | CLIP (default) | Veloce, offline, gratuito | Richiede PyTorch, meno flessibile |
 | LLM | Più flessibile, descrizioni naturali, genera vocabolari | Costi API, più lento, richiede internet |
+
+## Image Retrieval
+
+Crea carte partendo da **descrizioni testuali**, recuperando automaticamente immagini dal web.
+
+**Esempio d'uso:** vuoi creare un mazzo di carte dei giocatori della tua squadra di baseball? Fornisci solo i nomi, NIMITZ troverà le immagini e genererà le carte!
+
+### Setup
+
+Richiede almeno una API key (entrambe gratuite):
+
+```bash
+# Unsplash (raccomandato - ottima qualità, licenza permissiva)
+export UNSPLASH_ACCESS_KEY="your-key"
+# Registrati su: https://unsplash.com/developers
+
+# O Pexels (alternativa)
+export PEXELS_API_KEY="your-key"
+# Registrati su: https://www.pexels.com/api/
+```
+
+### Comandi
+
+```bash
+# Verifica configurazione API
+nimitz retrieve status
+
+# Recupera una singola immagine
+nimitz retrieve single "Golden Gate Bridge at sunset"
+nimitz retrieve single "Marco Bianchi baseball player" --preset art
+
+# Recupera e genera carte da un file di descrizioni
+nimitz retrieve batch players.txt                    # File .txt (un nome per riga)
+nimitz retrieve batch descriptions.json              # File .json (lista)
+nimitz retrieve batch data.csv                       # File .csv
+
+# Opzioni avanzate
+nimitz retrieve batch players.txt --source pexels    # Usa Pexels invece di Unsplash
+nimitz retrieve batch players.txt --no-clip          # Disabilita selezione CLIP
+nimitz retrieve batch players.txt --no-analyze       # Solo scarica, non analizzare
+nimitz retrieve batch players.txt --cache ./cache    # Directory cache personalizzata
+```
+
+### Caratteristiche
+
+- **Multi-source**: Supporto Unsplash e Pexels con licenze permissive
+- **CLIP Selection**: Sceglie automaticamente l'immagine più pertinente tra i candidati
+- **Smart Caching**: Cache locale per evitare re-download
+- **License Tracking**: Metadati completi di licenza e attribuzione per ogni immagine
+- **Placeholder Fallback**: Genera immagini placeholder per ricerche fallite
+- **Batch Processing**: Processa liste da file .txt, .csv, o .json
+- **Full Pipeline**: Integrazione completa con analisi CLIP e generazione carte
+
+### Esempio completo
+
+```bash
+# Crea un file con i nomi dei giocatori
+echo "Marco Bianchi, pitcher" > players.txt
+echo "Luca Rossi, catcher" >> players.txt
+echo "Giovanni Verdi, first base" >> players.txt
+
+# Genera le carte
+nimitz retrieve batch players.txt --preset art -o ./baseball_cards
+
+# Output:
+# ./baseball_cards/
+#   ├── Marco_Bianchi_pitcher.jpg
+#   ├── Luca_Rossi_catcher.jpg
+#   ├── Giovanni_Verdi_first_base.jpg
+#   ├── cards.json
+#   ├── cards.csv
+#   ├── retrieval_metadata.json
+#   └── visual_cards/
+```
 
 ## Preset vocabolari pronti
 
