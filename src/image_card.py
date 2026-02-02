@@ -484,8 +484,36 @@ def export_cards_to_csv(
     
     return df
 
+def add_gaming_stats_to_cards(
+    cards_data: List[Dict[str, Any]]
+) -> List[Dict[str, Any]]:
+    """
+    Add power level and rarity statistics to all cards.
+
+    This enhances the basic card data with gaming-specific attributes:
+    - power_level: Overall card strength (0-100)
+    - rarity_score: Uniqueness score (0-100)
+    - rarity_tier: Rarity classification (common/uncommon/rare/epic/legendary)
+    - rarity_color: Display color for the rarity tier
+    - rarity_symbol: Unicode symbol for the rarity tier
+
+    Args:
+        cards_data: List of image card data
+
+    Returns:
+        Enhanced cards with gaming stats
+    """
+    try:
+        from gaming import enhance_cards_with_gaming_stats
+        return enhance_cards_with_gaming_stats(cards_data)
+    except ImportError:
+        # Gaming module not available, return cards unchanged
+        print("Warning: Gaming module not available, skipping gaming stats")
+        return cards_data
+
+
 def find_similar_images(
-    cards_data: List[Dict[str, Any]], 
+    cards_data: List[Dict[str, Any]],
     target_image_name: str,
     similarity_threshold: float = 0.8,
     top_k: int = 5
