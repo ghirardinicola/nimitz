@@ -34,6 +34,16 @@ from vocabulary_wizard import (
     quick_validate,
     analyze_prompt_quality,
 )
+from llm_analyzer import (
+    get_llm_config,
+    analyze_image_llm,
+    analyze_images_batch,
+    generate_vocabulary_from_images,
+    generate_card_data_llm,
+    generate_cards_batch_llm,
+    check_llm_availability,
+    print_llm_status,
+)
 
 
 def describe_single_image(
@@ -370,6 +380,287 @@ def validate_vocabulary_file(vocabulary_file: str):
             print(f"    - {issue}")
 
 
+# =============================================================================
+# LLM-BASED FUNCTIONS
+# =============================================================================
+
+def describe_single_image_llm(
+    image_path: str,
+    provider: str = "auto",
+    verbose: bool = False,
+    language: str = "en"
+) -> Dict[str, Any]:
+    """
+    Analyze a single image using LLM vision capabilities.
+
+    Args:
+        image_path: Path to the image file
+        provider: LLM provider (openai, anthropic, auto)
+        verbose: Show detailed output
+        language: Response language (en/it)
+
+    Returns:
+        Dictionary with image analysis results
+    """
+    image_path = Path(image_path)
+
+    if not image_path.exists():
+        print(f"Error: Image not found: {image_path}")
+        sys.exit(1)
+
+    print(f"\n Analyzing with LLM: {image_path.name}")
+    print("-" * 50)
+
+    try:
+        config = get_llm_config(provider)
+        print(f"  Using: {config.provider.capitalize()} ({config.model})")
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+    result = analyze_image_llm(image_path, config, language)
+
+    if "error" in result:
+        print(f"Error: {result['error']}")
+        return result
+
+    # Print results
+    print(f"\n IMAGE: {result['image_name']}")
+    print("=" * 50)
+
+    if "description" in result:
+        print(f"\n DESCRIPTION:")
+        print(f"  {result['description']}")
+
+    if "mood" in result:
+        print(f"\n MOOD: {result['mood']}")
+
+    if "main_subject" in result:
+        print(f"\n SUBJECT: {result['main_subject']}")
+
+    if "characteristics" in result:
+        print(f"\n CHARACTERISTICS:")
+        for char_name, char_data in result["characteristics"].items():
+            if isinstance(char_data, dict):
+                score = char_data.get("score", 0)
+                value = char_data.get("value", "")
+                score_bar = create_score_bar(score / 100)
+                print(f"  {char_name.replace('_', ' ').title()}:")
+                print(f"    {score_bar} {score}")
+                if verbose:
+                    print(f"    {value}")
+
+    if "tags" in result and result["tags"]:
+        print(f"\n TAGS: {', '.join(result['tags'])}")
+
+    return result
+
+
+def analyze_directory_llm(
+    directory: str,
+    preset: str = "photography",
+    output_dir: Optional[str] = None,
+    provider: str = "auto",
+    no_visual: bool = False,
+    quiet: bool = False,
+    language: str = "en"
+) -> Dict[str, Any]:
+    """
+    Analyze all images in a directory using LLM.
+
+    Args:
+        directory: Path to directory with images
+        preset: Vocabulary preset to use
+        output_dir: Output directory
+        provider: LLM provider
+        no_visual: Skip visual card generation
+        quiet: Minimal output
+        language: Response language
+
+    Returns:
+        Dictionary with analysis results
+    """
+    directory = Path(directory)
+
+    if not directory.exists():
+        print(f"Error: Directory not found: {directory}")
+        sys.exit(1)
+
+    # Setup output directory
+    if output_dir is None:
+        output_dir = directory / "nimitz_output_llm"
+    else:
+        output_dir = Path(output_dir)
+
+    output_dir.mkdir(exist_ok=True)
+
+    try:
+        config = get_llm_config(provider)
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+    if not quiet:
+        print(f"\n NIMITZ LLM Analysis")
+        print("=" * 50)
+        print(f"  Directory: {directory}")
+        print(f"  Provider: {config.provider.capitalize()} ({config.model})")
+        print(f"  Preset: {preset}")
+        print(f"  Output: {output_dir}")
+        print()
+
+    # Get characteristics
+    characteristics = get_preset_characteristics(preset)
+
+    # Load images
+    image_paths = load_images(str(directory))
+
+    if not image_paths:
+        print(f"Error: No images found in {directory}")
+        sys.exit(1)
+
+    if not quiet:
+        print(f"  Found {len(image_paths)} images")
+        print(f"  Analyzing with LLM (this may take a while)...")
+
+    # Generate cards using LLM
+    def progress(current, total):
+        if not quiet:
+            print(f"    Processing {current}/{total}...", end="\r")
+
+    cards_data = generate_cards_batch_llm(
+        image_paths, characteristics, config, language, progress
+    )
+
+    if not quiet:
+        print()
+
+    # Filter successful cards
+    valid_cards = [c for c in cards_data if "error" not in c]
+
+    if not quiet:
+        print(f"\n Successfully analyzed: {len(valid_cards)}/{len(image_paths)} images")
+
+    # Print summary cards
+    if not quiet and valid_cards:
+        print("\n" + "=" * 50)
+        print(" IMAGE CARDS (LLM)")
+        print("=" * 50)
+        for card in valid_cards[:5]:
+            print(f"\n  {card['image_name']}")
+            for feature in card.get('dominant_features', [])[:3]:
+                score_bar = create_score_bar(feature['score'])
+                print(f"    {feature['characteristic']}: {score_bar} {feature['score']:.2f}")
+
+    # Export to JSON
+    import json
+    json_path = output_dir / "cards_llm.json"
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(cards_data, f, indent=2, ensure_ascii=False)
+
+    # Export CSV
+    csv_path = output_dir / "cards_llm.csv"
+    export_cards_to_csv(valid_cards, str(csv_path))
+
+    # Create visual cards
+    if not no_visual and valid_cards:
+        visual_dir = output_dir / "cards"
+        create_visual_image_cards(valid_cards, str(visual_dir))
+
+    # Final summary
+    if not quiet:
+        print("\n" + "=" * 50)
+        print(" ANALYSIS COMPLETE (LLM)")
+        print("=" * 50)
+        print(f"  Images analyzed: {len(valid_cards)}")
+        print(f"  Cards generated: {len(valid_cards)}")
+        print(f"\n  Output files:")
+        print(f"    JSON: {json_path}")
+        print(f"    CSV: {csv_path}")
+        if not no_visual:
+            print(f"    Visual cards: {visual_dir}")
+
+    return {
+        'cards_data': cards_data,
+        'valid_cards': valid_cards,
+        'output_dir': output_dir
+    }
+
+
+def generate_vocabulary_llm(
+    directory: str,
+    output_file: Optional[str] = None,
+    provider: str = "auto",
+    num_samples: int = 5,
+    language: str = "en"
+):
+    """
+    Generate a vocabulary using LLM analysis of sample images.
+
+    Args:
+        directory: Directory with sample images
+        output_file: Output file for vocabulary (JSON)
+        provider: LLM provider
+        num_samples: Number of images to sample
+        language: Response language
+    """
+    directory = Path(directory)
+
+    if not directory.exists():
+        print(f"Error: Directory not found: {directory}")
+        sys.exit(1)
+
+    try:
+        config = get_llm_config(provider)
+    except ValueError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+    print(f"\n NIMITZ - LLM Vocabulary Generator")
+    print("=" * 50)
+    print(f"  Provider: {config.provider.capitalize()} ({config.model})")
+    print(f"  Directory: {directory}")
+    print()
+
+    # Load images
+    image_paths = load_images(str(directory))
+
+    if not image_paths:
+        print(f"Error: No images found in {directory}")
+        sys.exit(1)
+
+    print(f"  Found {len(image_paths)} images, sampling {min(num_samples, len(image_paths))}...")
+
+    try:
+        vocabulary = generate_vocabulary_from_images(
+            image_paths, config, num_samples, language
+        )
+    except Exception as e:
+        print(f"Error generating vocabulary: {e}")
+        sys.exit(1)
+
+    # Print vocabulary
+    print(f"\n GENERATED VOCABULARY:")
+    print("=" * 50)
+
+    for char_name, prompts in vocabulary.items():
+        print(f"\n  {char_name.upper().replace('_', ' ')}")
+        for prompt in prompts:
+            print(f"    - {prompt}")
+
+    total_prompts = sum(len(p) for p in vocabulary.values())
+    print(f"\n  Total: {len(vocabulary)} characteristics, {total_prompts} prompts")
+
+    # Save if output specified
+    if output_file:
+        import json
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump({"characteristics": vocabulary}, f, indent=2, ensure_ascii=False)
+        print(f"\n  Saved to: {output_file}")
+
+    return vocabulary
+
+
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -382,6 +673,12 @@ Examples:
   nimitz describe photo.jpg --preset art
   nimitz analyze ./products --preset products --output ./results
   nimitz presets
+
+LLM Mode (no CLIP required):
+  nimitz llm status                     # Check LLM provider availability
+  nimitz llm describe photo.jpg         # Describe image with LLM
+  nimitz llm analyze ./photos           # Analyze directory with LLM
+  nimitz llm vocab ./photos -o vocab.json  # Generate vocabulary with LLM
         """
     )
 
@@ -489,6 +786,136 @@ Examples:
         help='JSON file with vocabulary to validate'
     )
 
+    # -------------------------------------------------------------------------
+    # llm command (with subcommands)
+    # -------------------------------------------------------------------------
+    llm_parser = subparsers.add_parser(
+        'llm',
+        help='LLM-based analysis (no CLIP required)',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Subcommands:
+  status    Check LLM provider availability
+  describe  Analyze a single image with LLM
+  analyze   Analyze a directory of images with LLM
+  vocab     Generate vocabulary from images using LLM
+
+Examples:
+  nimitz llm status
+  nimitz llm describe photo.jpg
+  nimitz llm analyze ./photos --provider anthropic
+  nimitz llm vocab ./photos -o my_vocabulary.json
+        """
+    )
+    llm_subparsers = llm_parser.add_subparsers(dest='llm_command', help='LLM subcommands')
+
+    # llm status
+    llm_subparsers.add_parser(
+        'status',
+        help='Check LLM provider availability'
+    )
+
+    # llm describe
+    llm_describe_parser = llm_subparsers.add_parser(
+        'describe',
+        help='Analyze a single image with LLM'
+    )
+    llm_describe_parser.add_argument(
+        'image',
+        help='Image file to analyze'
+    )
+    llm_describe_parser.add_argument(
+        '--provider',
+        choices=['openai', 'anthropic', 'auto'],
+        default='auto',
+        help='LLM provider (default: auto)'
+    )
+    llm_describe_parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        help='Show detailed analysis'
+    )
+    llm_describe_parser.add_argument(
+        '--lang',
+        choices=['en', 'it'],
+        default='en',
+        help='Response language (default: en)'
+    )
+
+    # llm analyze
+    llm_analyze_parser = llm_subparsers.add_parser(
+        'analyze',
+        help='Analyze a directory of images with LLM'
+    )
+    llm_analyze_parser.add_argument(
+        'directory',
+        help='Directory containing images to analyze'
+    )
+    llm_analyze_parser.add_argument(
+        '-p', '--preset',
+        choices=list_available_presets(),
+        default='photography',
+        help='Vocabulary preset (default: photography)'
+    )
+    llm_analyze_parser.add_argument(
+        '-o', '--output',
+        help='Output directory'
+    )
+    llm_analyze_parser.add_argument(
+        '--provider',
+        choices=['openai', 'anthropic', 'auto'],
+        default='auto',
+        help='LLM provider (default: auto)'
+    )
+    llm_analyze_parser.add_argument(
+        '--no-visual',
+        action='store_true',
+        help='Skip visual card generation'
+    )
+    llm_analyze_parser.add_argument(
+        '-q', '--quiet',
+        action='store_true',
+        help='Minimal output'
+    )
+    llm_analyze_parser.add_argument(
+        '--lang',
+        choices=['en', 'it'],
+        default='en',
+        help='Response language (default: en)'
+    )
+
+    # llm vocab
+    llm_vocab_parser = llm_subparsers.add_parser(
+        'vocab',
+        help='Generate vocabulary from images using LLM'
+    )
+    llm_vocab_parser.add_argument(
+        'directory',
+        help='Directory with sample images'
+    )
+    llm_vocab_parser.add_argument(
+        '-o', '--output',
+        help='Output file for vocabulary (JSON)'
+    )
+    llm_vocab_parser.add_argument(
+        '--provider',
+        choices=['openai', 'anthropic', 'auto'],
+        default='auto',
+        help='LLM provider (default: auto)'
+    )
+    llm_vocab_parser.add_argument(
+        '-n', '--samples',
+        type=int,
+        default=5,
+        help='Number of images to sample (default: 5)'
+    )
+    llm_vocab_parser.add_argument(
+        '--lang',
+        choices=['en', 'it'],
+        default='en',
+        help='Response language (default: en)'
+    )
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -526,6 +953,42 @@ Examples:
 
     elif args.command == 'validate':
         validate_vocabulary_file(args.vocabulary_file)
+
+    elif args.command == 'llm':
+        if args.llm_command is None:
+            llm_parser.print_help()
+            sys.exit(0)
+
+        elif args.llm_command == 'status':
+            print_llm_status()
+
+        elif args.llm_command == 'describe':
+            describe_single_image_llm(
+                image_path=args.image,
+                provider=args.provider,
+                verbose=args.verbose,
+                language=args.lang
+            )
+
+        elif args.llm_command == 'analyze':
+            analyze_directory_llm(
+                directory=args.directory,
+                preset=args.preset,
+                output_dir=args.output,
+                provider=args.provider,
+                no_visual=args.no_visual,
+                quiet=args.quiet,
+                language=args.lang
+            )
+
+        elif args.llm_command == 'vocab':
+            generate_vocabulary_llm(
+                directory=args.directory,
+                output_file=args.output,
+                provider=args.provider,
+                num_samples=args.samples,
+                language=args.lang
+            )
 
 
 if __name__ == '__main__':

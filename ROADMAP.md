@@ -7,7 +7,7 @@ Elenco ordinato delle issue da creare. Ogni issue rappresenta una feature comple
 | 1 | [MVP Manuale](#1-mvp-manuale) | ✅ done |
 | 2 | [Usabilità](#2-usabilità) | ✅ done |
 | 3 | [Vocabolario Collaborativo](#3-vocabolario-collaborativo) | ✅ done |
-| 4 | [LLM-Only](#4-llm-only) | ⚪ todo |
+| 4 | [LLM-Only](#4-llm-only) | ✅ done |
 | 5 | [Gaming](#5-gaming) | ⚪ todo |
 | 6 | [Image Retrieval](#6-image-retrieval) | ⚪ todo |
 
@@ -72,18 +72,41 @@ nimitz validate mio_vocabolario.json
 ---
 
 ## 4. LLM-Only
-**Stato:** ⚪ todo
+**Stato:** ✅ done
 
 Versione alternativa senza CLIP, usa solo un LLM multimodale.
 
 ### Acceptance Criteria
-- [ ] Analisi immagini via GPT-4V / Claude Vision
-- [ ] Generazione automatica del vocabolario dall'LLM
-- [ ] Scoring caratteristiche via prompt LLM
+- [x] Analisi immagini via GPT-4V / Claude Vision
+- [x] Generazione automatica del vocabolario dall'LLM
+- [x] Scoring caratteristiche via prompt LLM
 
 ### Note
 - Pro: più flessibile, no setup PyTorch
 - Contro: costi API, più lento
+
+### Nuovi comandi CLI
+```bash
+# Verifica disponibilità provider LLM
+nimitz llm status
+
+# Descrivi una singola immagine con LLM
+nimitz llm describe foto.jpg
+nimitz llm describe foto.jpg --provider anthropic  # forza provider
+nimitz llm describe foto.jpg --lang it  # risposta in italiano
+
+# Analizza una directory con LLM
+nimitz llm analyze ./foto
+nimitz llm analyze ./foto --preset art --provider openai
+
+# Genera vocabolario automaticamente con LLM
+nimitz llm vocab ./foto -o mio_vocabolario.json
+nimitz llm vocab ./foto --samples 10  # usa più immagini di esempio
+```
+
+### Requisiti
+- Imposta `ANTHROPIC_API_KEY` o `OPENAI_API_KEY` come variabile d'ambiente
+- Installa il pacchetto corrispondente: `pip install anthropic` o `pip install openai`
 
 ---
 

@@ -193,6 +193,52 @@ nimitz validate mio_vocabolario.json
 | `wizard` | `-o, --output` | File output per salvare vocabolario |
 | `wizard` | `--analyze` | Analizza immagini dopo creazione vocabolario |
 | `validate` | `vocabulary_file` | File JSON da validare |
+| `llm status` | - | Verifica disponibilità provider LLM |
+| `llm describe` | `image` | Immagine da analizzare con LLM |
+| `llm analyze` | `directory` | Directory da analizzare con LLM |
+| `llm vocab` | `directory` | Genera vocabolario con LLM |
+
+## Modalità LLM (senza CLIP)
+
+NIMITZ supporta anche l'analisi tramite LLM multimodali (GPT-4V / Claude Vision), senza bisogno di CLIP o PyTorch.
+
+### Setup
+
+```bash
+# Imposta la chiave API (una delle due)
+export ANTHROPIC_API_KEY="your-key"
+# oppure
+export OPENAI_API_KEY="your-key"
+
+# Installa il pacchetto corrispondente
+pip install anthropic  # per Claude
+pip install openai     # per GPT-4
+```
+
+### Comandi LLM
+
+```bash
+# Verifica quali provider sono disponibili
+nimitz llm status
+
+# Descrivi una singola immagine
+nimitz llm describe foto.jpg
+nimitz llm describe foto.jpg --lang it  # risposta in italiano
+
+# Analizza una directory di immagini
+nimitz llm analyze ./foto --preset photography
+nimitz llm analyze ./foto --provider anthropic  # forza provider specifico
+
+# Genera un vocabolario automaticamente analizzando le tue immagini
+nimitz llm vocab ./foto -o mio_vocabolario.json
+```
+
+### Vantaggi e svantaggi
+
+| Modalità | Pro | Contro |
+|----------|-----|--------|
+| CLIP (default) | Veloce, offline, gratuito | Richiede PyTorch, meno flessibile |
+| LLM | Più flessibile, descrizioni naturali, genera vocabolari | Costi API, più lento, richiede internet |
 
 ## Preset vocabolari pronti
 

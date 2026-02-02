@@ -9,3 +9,7 @@ tqdm
 ftfy
 regex
 git+https://github.com/openai/CLIP.git
+
+# Optional: for LLM mode (nimitz llm ...)
+# pip install openai     # for GPT-4V
+# pip install anthropic  # for Claude Vision
