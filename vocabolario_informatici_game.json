@@ -1,0 +1,46 @@
+{
+  "characteristics": {
+    "influenza_sul_mercato": [
+      "programmatore con poche collaborazioni e poco riconoscimento",
+      "sviluppatore con un piccolo gruppo di follower e progetti locali",
+      "programmatore con un portfolio noto in settori specifici",
+      "developer con un grande impatto su un settore tecnologico",
+      "programmatore influente con un'ampia base di utenti e riconoscimento internazionale"
+    ],
+    "uso_di_tecnologie_avanzate": [
+      "programmatore che usa solo linguaggi basilari e tool semplici",
+      "sviluppatore con conoscenza di linguaggi moderni ma limitata",
+      "programmatore esperto in framework comuni e tecnologie standard",
+      "developer con competenze avanzate in tecnologie emergenti e nuove architetture",
+      "programmatore che utilizza tecnologie all'avanguardia e strumenti di intelligenza artificiale"
+    ],
+    "riconoscimento_professionale": [
+      "programmatore senza certificazioni o riconoscimenti pubblici",
+      "sviluppatore con alcuni riconoscimenti locali o in ambito accademico",
+      "programmatore con certificazioni internazionali e partecipazione a conferenze",
+      "developer con un profilo riconosciuto da aziende leader nel settore",
+      "programmatore leggendario con premi, libri scritti e riconoscimenti globali"
+    ],
+    "lunghezza_della_barba": [
+      "programmatore con barba corta o senza barba",
+      "sviluppatore con barba leggermente cresciuta",
+      "programmatore con barba media, ben curata",
+      "developer con barba lunga e stilosa",
+      "programmatore con una barba lunga e fitta, tipica di un vero hacker"
+    ],
+    "openess": [
+      "programmatore che lavora in modo chiuso e non condivide codice",
+      "sviluppatore con un po' di contributi aperti e repository privati",
+      "programmatore con repository pubblici e collaborazioni limitate",
+      "developer attivo in comunità open source e progetti collaborativi",
+      "programmatore con un forte impegno open source e contributi significativi a progetti globali"
+    ]
+  },
+  "metadata": {
+    "created_by": "NIMITZ Vocabulary Wizard",
+    "total_characteristics": 5,
+    "total_prompts": 25,
+    "type": "quantitative",
+    "description": "Vocabolario quantitativo per carte di informatici famosi - stile Top Trumps"
+  }
+}

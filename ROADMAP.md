@@ -10,6 +10,7 @@ Elenco ordinato delle issue da creare. Ogni issue rappresenta una feature comple
 | 4 | [LLM-Only](#4-llm-only) | ✅ done |
 | 5 | [Gaming](#5-gaming) | ✅ done |
 | 6 | [Image Retrieval](#6-image-retrieval) | ✅ done |
+| 7 | [Interactive Discovery & Agent Mode](#7-interactive-discovery--agent-mode) | 🔨 in progress |
 
 ---
 
@@ -245,6 +246,116 @@ nimitz retrieve discover "Italian Renaissance painters" -o painters.json --auto 
 - **Batch Processing**: Processa liste di descrizioni da file .txt, .csv, o .json
 - **Full Pipeline**: Integrazione completa con analisi CLIP e generazione carte
 - **🆕 Web Discovery**: Scopre automaticamente entità (giocatori, persone, etc.) da ricerche web con Brave Search
+
+---
+
+## 7. Interactive Discovery & Agent Mode
+**Stato:** 🔨 in progress
+
+Rende NIMITZ più intelligente e interattivo, con supporto per essere chiamato da agenti AI.
+
+### Problema attuale
+Quando si usa `nimitz retrieve discover "baseball italiani"`:
+- ❌ Raccoglie TUTTO ciò che trova (nomi, organizzazioni, termini generici)
+- ❌ Non valida se sono davvero nomi di persona
+- ❌ Non chiede conferma prima di procedere
+- ❌ Non chiede quali caratteristiche usare per le carte
+- ❌ Genera carte con attributi casuali invece di chiedere all'utente
+
+### Acceptance Criteria
+- [ ] **Interactive Discovery**: Dopo il web search, mostra preview e chiede conferma
+  - Filtraggio intelligente: solo nomi di persona vs organizzazioni
+  - Preview dei risultati prima di procedere
+  - Possibilità di escludere/modificare risultati
+  
+- [ ] **Interactive Card Configuration**: Prima di generare carte, chiede:
+  - "Quali caratteristiche vuoi per queste carte?"
+  - Suggerimenti basati sul contesto (baseball → batting avg, home runs, etc.)
+  - Modalità wizard per definire statistiche custom
+  
+- [ ] **Agent Mode**: Modalità ottimizzata per essere chiamato da LLM/agenti
+  - Output JSON strutturato invece di print
+  - Callback per domande interattive
+  - Step-by-step confirmation
+  - Documentazione per integrare NIMITZ in agenti AI
+  
+- [ ] **Improved Name Extraction**: 
+  - Usa LLM per validare se un testo è un nome di persona
+  - Deduplica intelligente (Mike Piazza vs Michael Piazza)
+  - Filtra false positive (termini generici, organizzazioni)
+
+### Workflow migliorato
+
+#### Prima (automatico):
+```bash
+$ nimitz retrieve discover "baseball italiani" -o players.txt
+🔍 Searching: baseball italiani
+✓ Found 41 entities
+✓ Saved to: players.txt
+# → File con 41 righe, molte sono spazzatura
+```
+
+#### Dopo (interattivo):
+```bash
+$ nimitz retrieve discover "baseball italiani" -o players.txt
+🔍 Searching: baseball italiani
+✓ Found 41 potential entities
+
+⚠️  Detected mixed results (people + organizations). Filter?
+  1. Keep only person names (recommended)
+  2. Keep everything
+  3. Review manually
+Choice [1-3]: 1
+
+✓ Filtered to 12 person names
+
+📋 Preview:
+  1. Mike Piazza
+  2. Joe DiMaggio
+  3. Yogi Berra
+  ...
+
+Continue with these 12 names? [Y/n]: y
+
+🎴 Configure card characteristics:
+  Found baseball context. Suggested characteristics:
+  - Batting Average (AVG)
+  - Home Runs (HR)
+  - RBI
+  ...
+  
+Use these suggestions? [Y/n/custom]: y
+
+✓ Saved to: players.txt
+✓ Ready to generate cards with baseball stats
+```
+
+### Nuovi comandi CLI
+
+```bash
+# Interactive mode (default)
+nimitz retrieve discover "query" -o file.txt
+
+# Non-interactive (per script/agenti)
+nimitz retrieve discover "query" -o file.txt --no-interactive
+
+# Agent mode - output JSON strutturato
+nimitz retrieve discover "query" -o file.txt --agent-mode
+
+# Filtri espliciti
+nimitz retrieve discover "query" --filter people  # solo persone
+nimitz retrieve discover "query" --filter org     # solo organizzazioni
+```
+
+### Benefici
+1. **Qualità**: Risultati più puliti, meno false positive
+2. **Controllo**: Utente decide cosa includere
+3. **Context-aware**: Suggerisce caratteristiche appropriate
+4. **Agent-ready**: Facile da integrare in workflow automatizzati
+
+### Requisiti aggiuntivi
+- Per validazione nomi con LLM (opzionale): API key di un provider LLM
+- Mantiene compatibilità con modalità non-interattiva per script
 
 ---
 

@@ -9,6 +9,7 @@ tqdm
 ftfy
 regex
 requests
+litellm
 git+https://github.com/openai/CLIP.git
 
 # Optional: for Image Retrieval (nimitz retrieve ...)
@@ -16,9 +17,9 @@ git+https://github.com/openai/CLIP.git
 # - UNSPLASH_ACCESS_KEY for Unsplash (get at https://unsplash.com/developers)
 # - PEXELS_API_KEY for Pexels (get at https://www.pexels.com/api/)
 
-# Optional: for LLM mode (nimitz llm ...)
-# pip install litellm    # unified proxy for all LLM providers (recommended)
+# LLM Support - now REQUIRED for smart entity filtering
 # Supports: OpenAI (GPT-4V), Anthropic (Claude), Google (Gemini)
+# Set at least one: ANTHROPIC_API_KEY, GEMINI_API_KEY, or OPENAI_API_KEY
 
 # Optional: for PDF export (nimitz export-pdf)
 # pip install reportlab

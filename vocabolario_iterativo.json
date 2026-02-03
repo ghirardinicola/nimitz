@@ -1,0 +1,45 @@
+{
+  "characteristics": {
+    "programming_language_creation": [
+      "person holding computer screen displaying code in a newly created programming language with unique syntax",
+      "individual working at desk with multiple monitors showing custom programming language interface",
+      "developer pointing to whiteboard with handwritten code in invented programming language notation",
+      "engineer sitting at workstation with terminal output in a distinctive new programming language"
+    ],
+    "algorithm_invention": [
+      "person standing next to whiteboard covered with complex mathematical formulas and flowcharts",
+      "researcher at lab table with papers showing algorithm pseudocode and computational diagrams",
+      "computer scientist examining printed algorithm flowchart with detailed step-by-step logic",
+      "developer presenting algorithm diagram on projector screen with visual representation of recursive process"
+    ],
+    "computing_innovation": [
+      "individual working with vintage computer hardware showing early computing device components",
+      "engineer examining circuit board with integrated chips and electronic components",
+      "scientist operating early computer system with large monitor and keyboard setup",
+      "technician working with mainframe computer equipment and punch card reader"
+    ],
+    "software_architecture": [
+      "person designing software architecture with blueprints and digital schematics",
+      "developer creating system design diagrams with interconnected nodes and data flows",
+      "programmer working with architectural blueprints showing database structure",
+      "engineer sketching software framework with layered components and interface connections"
+    ],
+    "technical_contribution_visualization": [
+      "individual presenting technical contribution through visual diagram with data flow",
+      "researcher displaying algorithm complexity chart with mathematical visualization",
+      "developer showing software architecture diagram with color-coded components",
+      "computer scientist demonstrating technical innovation with interactive visualization"
+    ],
+    "innovation_impact_representation": [
+      "person with computer screen showing impact metrics and usage statistics",
+      "engineer presenting technology adoption graph with growth curves",
+      "developer displaying real-world application screenshots of their invention",
+      "scientist showing before-and-after comparison of technological advancement"
+    ]
+  },
+  "metadata": {
+    "created_by": "NIMITZ Vocabulary Wizard",
+    "total_characteristics": 6,
+    "total_prompts": 24
+  }
+}

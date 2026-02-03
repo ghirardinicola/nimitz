@@ -1,0 +1,332 @@
+[
+  {
+    "description": "Ada Lovelace, computer scientist",
+    "image_path": "./informatici_cards/Ada_Lovelace__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Ada Lovelace, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/black-and-silver-car-wheel-4581613/",
+      "author": "Nana  Dua",
+      "author_url": "https://www.pexels.com/@nanadua11",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by Nana  Dua on Pexels",
+      "retrieved_at": 1770133607.437831
+    }
+  },
+  {
+    "description": "Alan Turing, computer scientist",
+    "image_path": "./informatici_cards/Alan_Turing__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Alan Turing, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/close-up-of-a-nvidia-graphics-card-8622911/",
+      "author": "Nana  Dua",
+      "author_url": "https://www.pexels.com/@nanadua11",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by Nana  Dua on Pexels",
+      "retrieved_at": 1770123853.414746
+    }
+  },
+  {
+    "description": "Andrei Alexandrescu, computer scientist",
+    "image_path": "./informatici_cards/Andrei_Alexandrescu__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Andrei Alexandrescu, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133610.078342
+    }
+  },
+  {
+    "description": "Barbara Liskov, computer scientist",
+    "image_path": "./informatici_cards/Barbara_Liskov__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Barbara Liskov, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133611.7720919
+    }
+  },
+  {
+    "description": "Daniel Kahneman, computer scientist",
+    "image_path": "./informatici_cards/Daniel_Kahneman__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Daniel Kahneman, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/camera-beside-a-book-14282189/",
+      "author": "Leonardo Oliveira",
+      "author_url": "https://www.pexels.com/@leonardo-oliveira-255749901",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by Leonardo Oliveira on Pexels",
+      "retrieved_at": 1770133614.111627
+    }
+  },
+  {
+    "description": "David Evans, computer scientist",
+    "image_path": "./informatici_cards/David_Evans__computer_scientist.jpeg",
+    "metadata": {
+      "description": "David Evans, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/an-illuminated-laptop-screen-11210340/",
+      "author": "Lisa from Pexels",
+      "author_url": "https://www.pexels.com/@fotios-photos",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by Lisa from Pexels on Pexels",
+      "retrieved_at": 1770133616.0827022
+    }
+  },
+  {
+    "description": "Donald Knuth, computer scientist",
+    "image_path": "./informatici_cards/Donald_Knuth__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Donald Knuth, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770123864.1816268
+    }
+  },
+  {
+    "description": "Elizabeth Feinler, computer scientist",
+    "image_path": "./informatici_cards/Elizabeth_Feinler__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Elizabeth Feinler, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133618.7139032
+    }
+  },
+  {
+    "description": "Grace Hopper, computer scientist",
+    "image_path": "./informatici_cards/Grace_Hopper__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Grace Hopper, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770123855.407125
+    }
+  },
+  {
+    "description": "Ivan Sutherland, computer scientist",
+    "image_path": "./informatici_cards/Ivan_Sutherland__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Ivan Sutherland, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770123880.94249
+    }
+  },
+  {
+    "description": "John McCarthy, computer scientist",
+    "image_path": "./informatici_cards/John_McCarthy__computer_scientist.jpeg",
+    "metadata": {
+      "description": "John McCarthy, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/full-moon-rising-above-the-clouds-over-san-francisco-bay-john-f-mccarthy-memorial-bridge-12817979/",
+      "author": "Robert So",
+      "author_url": "https://www.pexels.com/@robertkso",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by Robert So on Pexels",
+      "retrieved_at": 1770133623.469697
+    }
+  },
+  {
+    "description": "John von Neumann, computer scientist",
+    "image_path": "./informatici_cards/John_von_Neumann__computer_scientist.jpeg",
+    "metadata": {
+      "description": "John von Neumann, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133625.09714
+    }
+  },
+  {
+    "description": "Leonardo Torres Quevedo, computer scientist",
+    "image_path": "./informatici_cards/Leonardo_Torres_Quevedo__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Leonardo Torres Quevedo, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133626.956661
+    }
+  },
+  {
+    "description": "Linus Torvalds, computer scientist",
+    "image_path": "./informatici_cards/Linus_Torvalds__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Linus Torvalds, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133628.5915678
+    }
+  },
+  {
+    "description": "Margaret Hamilton, computer scientist",
+    "image_path": "./informatici_cards/Margaret_Hamilton__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Margaret Hamilton, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133630.2001212
+    }
+  },
+  {
+    "description": "Martin Hellman, computer scientist",
+    "image_path": "./informatici_cards/Martin_Hellman__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Martin Hellman, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133631.915432
+    }
+  },
+  {
+    "description": "Robert Metcalfe, computer scientist",
+    "image_path": "./informatici_cards/Robert_Metcalfe__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Robert Metcalfe, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133633.531948
+    }
+  },
+  {
+    "description": "Shafi Goldwasser, computer scientist",
+    "image_path": "./informatici_cards/Shafi_Goldwasser__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Shafi Goldwasser, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133635.223114
+    }
+  },
+  {
+    "description": "Susan Wojcicki, computer scientist",
+    "image_path": "./informatici_cards/Susan_Wojcicki__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Susan Wojcicki, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133636.80039
+    }
+  },
+  {
+    "description": "Tim Berners-Lee, computer scientist",
+    "image_path": "./informatici_cards/Tim_Berners-Lee__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Tim Berners-Lee, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770123860.3851252
+    }
+  },
+  {
+    "description": "Vint Cerf, computer scientist",
+    "image_path": "./informatici_cards/Vint_Cerf__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Vint Cerf, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133639.590535
+    }
+  },
+  {
+    "description": "Yukihiro Matsumoto, computer scientist",
+    "image_path": "./informatici_cards/Yukihiro_Matsumoto__computer_scientist.jpeg",
+    "metadata": {
+      "description": "Yukihiro Matsumoto, computer scientist",
+      "source": "pexels",
+      "source_url": "https://www.pexels.com/photo/woman-using-a-computer-8875522/",
+      "author": "cottonbro studio",
+      "author_url": "https://www.pexels.com/@cottonbro",
+      "license": "Pexels License",
+      "license_url": "https://www.pexels.com/license/",
+      "attribution": "Photo by cottonbro studio on Pexels",
+      "retrieved_at": 1770133641.181291
+    }
+  }
+]

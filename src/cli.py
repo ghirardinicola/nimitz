@@ -6,8 +6,30 @@ Usage-friendly CLI for image analysis and card generation
 
 import argparse
 import sys
+import os
 from pathlib import Path
 from typing import Optional, Dict, Any, List
+
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+
+    env_path = Path(__file__).parent.parent / ".env"
+    if env_path.exists():
+        load_dotenv(env_path)
+        # Debug: print che le variabili sono state caricate
+        if os.getenv("VLLM_BASE_URL"):
+            pass  # Silently loaded
+except ImportError:
+    # dotenv not installed, try manual loading
+    env_path = Path(__file__).parent.parent / ".env"
+    if env_path.exists():
+        with open(env_path) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, value = line.split("=", 1)
+                    os.environ[key.strip()] = value.strip()
 
 from core import (
     load_images,
@@ -85,9 +107,7 @@ from web_discovery import (
 
 
 def describe_single_image(
-    image_path: str,
-    preset: str = "photography",
-    verbose: bool = False
+    image_path: str, preset: str = "photography", verbose: bool = False
 ) -> Dict[str, Any]:
     """
     Analyze and describe a single image.
@@ -154,24 +174,26 @@ def describe_single_image(
     print("=" * 50)
 
     # Show dominant features
-    if card['dominant_features']:
+    if card["dominant_features"]:
         print("\n TOP FEATURES:")
-        for i, feature in enumerate(card['dominant_features'], 1):
-            score_bar = create_score_bar(feature['score'])
-            confidence = "HIGH" if feature['confidence'] == 'high' else "MED"
-            print(f"  {i}. [{confidence}] {feature['characteristic']}: {feature['prompt']}")
+        for i, feature in enumerate(card["dominant_features"], 1):
+            score_bar = create_score_bar(feature["score"])
+            confidence = "HIGH" if feature["confidence"] == "high" else "MED"
+            print(
+                f"  {i}. [{confidence}] {feature['characteristic']}: {feature['prompt']}"
+            )
             print(f"     {score_bar} {feature['score']:.2f}")
 
     # Show characteristic breakdown
     if verbose:
         print("\n DETAILED ANALYSIS:")
-        for char_name, char_info in card['characteristics'].items():
+        for char_name, char_info in card["characteristics"].items():
             print(f"\n  {char_name.upper().replace('_', ' ')}:")
             print(f"    Best: {char_info['max_prompt']} ({char_info['max_score']:.2f})")
             print(f"    Avg:  {char_info['mean_score']:.2f}")
 
     # Summary
-    summary = card['feature_summary']
+    summary = card["feature_summary"]
     print(f"\n SUMMARY:")
     print(f"  Overall score: {summary['overall_max']:.2f}")
     print(f"  High confidence features: {summary['high_confidence_features']}")
@@ -186,7 +208,7 @@ def analyze_directory(
     output_dir: Optional[str] = None,
     n_clusters: int = 5,
     no_visual: bool = False,
-    quiet: bool = False
+    quiet: bool = False,
 ) -> Dict[str, Any]:
     """
     Analyze all images in a directory.
@@ -268,7 +290,9 @@ def analyze_directory(
         print("\n" + "=" * 50)
         print(" IMAGE CARDS")
         print("=" * 50)
-        print_simple_image_cards(cards_data, max_cards=5 if len(cards_data) > 5 else None)
+        print_simple_image_cards(
+            cards_data, max_cards=5 if len(cards_data) > 5 else None
+        )
 
     # Export CSV
     csv_path = output_dir / "cards.csv"
@@ -292,9 +316,9 @@ def analyze_directory(
             print(f"    Visual cards: {visual_dir}")
 
     return {
-        'cards_data': cards_data,
-        'valid_paths': valid_paths,
-        'output_dir': output_dir
+        "cards_data": cards_data,
+        "valid_paths": valid_paths,
+        "output_dir": output_dir,
     }
 
 
@@ -321,7 +345,7 @@ def list_presets():
 def run_vocabulary_wizard(
     image_directory: Optional[str] = None,
     output_file: Optional[str] = None,
-    analyze_after: bool = False
+    analyze_after: bool = False,
 ):
     """
     Run the interactive vocabulary wizard.
@@ -344,7 +368,8 @@ def run_vocabulary_wizard(
     # Save if output specified
     if output_file:
         import json
-        with open(output_file, 'w', encoding='utf-8') as f:
+
+        with open(output_file, "w", encoding="utf-8") as f:
             json.dump({"characteristics": vocabulary}, f, indent=2, ensure_ascii=False)
         print(f"\n Vocabulary saved to: {output_file}")
 
@@ -352,10 +377,9 @@ def run_vocabulary_wizard(
     if analyze_after and image_directory:
         print("\n Running analysis with new vocabulary...")
         from main import run_nimitz_pipeline
+
         run_nimitz_pipeline(
-            image_directory=image_directory,
-            characteristics=vocabulary,
-            visualize=True
+            image_directory=image_directory, characteristics=vocabulary, visualize=True
         )
 
 
@@ -376,17 +400,19 @@ def validate_vocabulary_file(vocabulary_file: str):
         sys.exit(1)
 
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, "r", encoding="utf-8") as f:
             data = json.load(f)
     except json.JSONDecodeError as e:
         print(f"Error: Invalid JSON: {e}")
         sys.exit(1)
 
     # Extract characteristics
-    characteristics = data.get('characteristics', data)
+    characteristics = data.get("characteristics", data)
 
     if not isinstance(characteristics, dict):
-        print("Error: Invalid vocabulary format. Expected 'characteristics' dictionary.")
+        print(
+            "Error: Invalid vocabulary format. Expected 'characteristics' dictionary."
+        )
         sys.exit(1)
 
     # Validate
@@ -401,20 +427,24 @@ def validate_vocabulary_file(vocabulary_file: str):
 
     # Per-characteristic quality
     print(" Quality per characteristic:")
-    for name, quality in report['characteristic_quality'].items():
-        indicator = "" if quality['score'] >= 70 else "" if quality['score'] >= 50 else ""
-        print(f"  {indicator} {name}: {quality['score']}/100 ({quality['count']} prompts)")
-        if quality['issues']:
-            for issue in quality['issues'][:2]:
+    for name, quality in report["characteristic_quality"].items():
+        indicator = (
+            "" if quality["score"] >= 70 else "" if quality["score"] >= 50 else ""
+        )
+        print(
+            f"  {indicator} {name}: {quality['score']}/100 ({quality['count']} prompts)"
+        )
+        if quality["issues"]:
+            for issue in quality["issues"][:2]:
                 print(f"      - {issue}")
 
     # Overall assessment
     print()
-    if report['valid']:
+    if report["valid"]:
         print(" Vocabulary is valid and ready to use!")
     else:
         print(" Vocabulary has quality issues:")
-        for issue in report['issues']:
+        for issue in report["issues"]:
             print(f"    - {issue}")
 
 
@@ -422,11 +452,9 @@ def validate_vocabulary_file(vocabulary_file: str):
 # LLM-BASED FUNCTIONS
 # =============================================================================
 
+
 def describe_single_image_llm(
-    image_path: str,
-    provider: str = "auto",
-    verbose: bool = False,
-    language: str = "en"
+    image_path: str, provider: str = "auto", verbose: bool = False, language: str = "en"
 ) -> Dict[str, Any]:
     """
     Analyze a single image using LLM vision capabilities.
@@ -501,7 +529,7 @@ def analyze_directory_llm(
     provider: str = "auto",
     no_visual: bool = False,
     quiet: bool = False,
-    language: str = "en"
+    language: str = "en",
 ) -> Dict[str, Any]:
     """
     Analyze all images in a directory using LLM.
@@ -586,14 +614,17 @@ def analyze_directory_llm(
         print("=" * 50)
         for card in valid_cards[:5]:
             print(f"\n  {card['image_name']}")
-            for feature in card.get('dominant_features', [])[:3]:
-                score_bar = create_score_bar(feature['score'])
-                print(f"    {feature['characteristic']}: {score_bar} {feature['score']:.2f}")
+            for feature in card.get("dominant_features", [])[:3]:
+                score_bar = create_score_bar(feature["score"])
+                print(
+                    f"    {feature['characteristic']}: {score_bar} {feature['score']:.2f}"
+                )
 
     # Export to JSON
     import json
+
     json_path = output_dir / "cards_llm.json"
-    with open(json_path, 'w', encoding='utf-8') as f:
+    with open(json_path, "w", encoding="utf-8") as f:
         json.dump(cards_data, f, indent=2, ensure_ascii=False)
 
     # Export CSV
@@ -619,9 +650,9 @@ def analyze_directory_llm(
             print(f"    Visual cards: {visual_dir}")
 
     return {
-        'cards_data': cards_data,
-        'valid_cards': valid_cards,
-        'output_dir': output_dir
+        "cards_data": cards_data,
+        "valid_cards": valid_cards,
+        "output_dir": output_dir,
     }
 
 
@@ -630,7 +661,7 @@ def generate_vocabulary_llm(
     output_file: Optional[str] = None,
     provider: str = "auto",
     num_samples: int = 5,
-    language: str = "en"
+    language: str = "en",
 ):
     """
     Generate a vocabulary using LLM analysis of sample images.
@@ -667,7 +698,9 @@ def generate_vocabulary_llm(
         print(f"Error: No images found in {directory}")
         sys.exit(1)
 
-    print(f"  Found {len(image_paths)} images, sampling {min(num_samples, len(image_paths))}...")
+    print(
+        f"  Found {len(image_paths)} images, sampling {min(num_samples, len(image_paths))}..."
+    )
 
     try:
         vocabulary = generate_vocabulary_from_images(
@@ -692,7 +725,8 @@ def generate_vocabulary_llm(
     # Save if output specified
     if output_file:
         import json
-        with open(output_file, 'w', encoding='utf-8') as f:
+
+        with open(output_file, "w", encoding="utf-8") as f:
             json.dump({"characteristics": vocabulary}, f, indent=2, ensure_ascii=False)
         print(f"\n  Saved to: {output_file}")
 
@@ -703,35 +737,34 @@ def generate_vocabulary_llm(
 # GAMING FUNCTIONS
 # =============================================================================
 
+
 def load_cards_from_json(filepath: str) -> List[Dict[str, Any]]:
     """Load cards from a JSON file (from previous analysis)"""
     import json
+
     path = Path(filepath)
 
     if not path.exists():
         print(f"Error: File not found: {filepath}")
         sys.exit(1)
 
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     # Handle both formats: list of cards or dict with cards_data
     if isinstance(data, list):
         return data
-    elif isinstance(data, dict) and 'cards_data' in data:
-        return data['cards_data']
-    elif isinstance(data, dict) and 'cards' in data:
-        return data['cards']
+    elif isinstance(data, dict) and "cards_data" in data:
+        return data["cards_data"]
+    elif isinstance(data, dict) and "cards" in data:
+        return data["cards"]
     else:
         print("Error: Invalid cards file format")
         sys.exit(1)
 
 
 def compare_cards_command(
-    cards_file: str,
-    card1_name: str,
-    card2_name: str,
-    category: Optional[str] = None
+    cards_file: str, card1_name: str, card2_name: str, category: Optional[str] = None
 ):
     """Compare two cards from a cards file"""
     cards = load_cards_from_json(cards_file)
@@ -741,7 +774,7 @@ def compare_cards_command(
     card2 = None
 
     for card in cards:
-        name = card.get('image_name', '')
+        name = card.get("image_name", "")
         if card1_name.lower() in name.lower():
             card1 = card
         if card2_name.lower() in name.lower():
@@ -749,7 +782,7 @@ def compare_cards_command(
 
     if card1 is None:
         print(f"Error: Card '{card1_name}' not found")
-        available = [c.get('image_name', '') for c in cards[:10]]
+        available = [c.get("image_name", "") for c in cards[:10]]
         print(f"Available cards (first 10): {', '.join(available)}")
         sys.exit(1)
 
@@ -762,10 +795,7 @@ def compare_cards_command(
 
 
 def battle_cards_command(
-    cards_file: str,
-    card1_name: str,
-    card2_name: str,
-    rounds: int = 5
+    cards_file: str, card1_name: str, card2_name: str, rounds: int = 5
 ):
     """Battle between two cards"""
     cards = load_cards_from_json(cards_file)
@@ -775,7 +805,7 @@ def battle_cards_command(
     card2 = None
 
     for card in cards:
-        name = card.get('image_name', '')
+        name = card.get("image_name", "")
         if card1_name.lower() in name.lower():
             card1 = card
         if card2_name.lower() in name.lower():
@@ -803,17 +833,15 @@ def show_rarity_command(cards_file: str, top_n: int = 10):
 
     # Sort by rarity
     sorted_cards = sorted(
-        enhanced,
-        key=lambda c: c.get('rarity_score', 0),
-        reverse=True
+        enhanced, key=lambda c: c.get("rarity_score", 0), reverse=True
     )
 
     for i, card in enumerate(sorted_cards[:top_n], 1):
-        name = card.get('image_name', 'Unknown')
-        rarity = card.get('rarity_score', 0)
-        tier = card.get('rarity_tier', 'common')
-        symbol = card.get('rarity_symbol', '')
-        power = card.get('power_level', 0)
+        name = card.get("image_name", "Unknown")
+        rarity = card.get("rarity_score", 0)
+        tier = card.get("rarity_tier", "common")
+        symbol = card.get("rarity_symbol", "")
+        power = card.get("power_level", 0)
 
         print(f"\n  {i}. {symbol} {name}")
         print(f"     Rarity: {rarity:.1f} ({tier.title()})")
@@ -834,7 +862,7 @@ def deck_create_command(
     deck_name: str,
     output_file: str,
     card_names: Optional[List[str]] = None,
-    top_n: Optional[int] = None
+    top_n: Optional[int] = None,
 ):
     """Create a new deck from cards"""
     cards = load_cards_from_json(cards_file)
@@ -844,18 +872,16 @@ def deck_create_command(
         selected = []
         for name in card_names:
             for card in cards:
-                if name.lower() in card.get('image_name', '').lower():
+                if name.lower() in card.get("image_name", "").lower():
                     selected.append(card)
                     break
         cards = selected
     elif top_n:
         # Select top N by power
         enhanced = enhance_cards_with_gaming_stats(cards)
-        cards = sorted(
-            enhanced,
-            key=lambda c: c.get('power_level', 0),
-            reverse=True
-        )[:top_n]
+        cards = sorted(enhanced, key=lambda c: c.get("power_level", 0), reverse=True)[
+            :top_n
+        ]
 
     deck = create_deck_from_cards(cards, name=deck_name)
     saved_path = deck.save(output_file)
@@ -884,7 +910,7 @@ def deck_add_command(deck_file: str, cards_file: str, card_names: List[str]):
     added = 0
     for name in card_names:
         for card in cards:
-            if name.lower() in card.get('image_name', '').lower():
+            if name.lower() in card.get("image_name", "").lower():
                 if deck.add_card(card):
                     added += 1
                     print(f"  Added: {card.get('image_name')}")
@@ -909,8 +935,8 @@ def deck_remove_command(deck_file: str, card_names: List[str]):
         else:
             # Try partial match
             for card in deck.cards:
-                if name.lower() in card.get('image_name', '').lower():
-                    if deck.remove_card(card.get('image_name')):
+                if name.lower() in card.get("image_name", "").lower():
+                    if deck.remove_card(card.get("image_name")):
                         removed += 1
                         print(f"  Removed: {card.get('image_name')}")
                     break
@@ -920,11 +946,7 @@ def deck_remove_command(deck_file: str, card_names: List[str]):
     print(f" Deck now has {deck.size()} cards")
 
 
-def export_pdf_command(
-    cards_file: str,
-    output_file: str,
-    page_size: str = "A4"
-):
+def export_pdf_command(cards_file: str, output_file: str, page_size: str = "A4"):
     """Export cards to PDF"""
     if not check_pdf_support():
         print("Error: PDF export requires reportlab")
@@ -935,10 +957,7 @@ def export_pdf_command(
     export_cards_to_pdf(cards, output_file, page_size=page_size)
 
 
-def export_png_command(
-    cards_file: str,
-    output_dir: str
-):
+def export_png_command(cards_file: str, output_dir: str):
     """Export cards as PNG files"""
     cards = load_cards_from_json(cards_file)
     export_cards_to_png(cards, output_dir)
@@ -958,10 +977,10 @@ def retrieve_status_command():
         print(f"\n{source.capitalize()}: {status}")
 
         if not available:
-            if source == 'unsplash':
+            if source == "unsplash":
                 print("  Set UNSPLASH_ACCESS_KEY environment variable")
                 print("  Get key at: https://unsplash.com/developers")
-            elif source == 'pexels':
+            elif source == "pexels":
                 print("  Set PEXELS_API_KEY environment variable")
                 print("  Get key at: https://www.pexels.com/api/")
 
@@ -975,12 +994,12 @@ def retrieve_status_command():
 
 def retrieve_single_command(
     description: str,
-    output_dir: str = './nimitz_output',
-    preset: str = 'photography',
-    source: str = 'unsplash',
+    output_dir: str = "./nimitz_output",
+    preset: str = "photography",
+    source: str = "unsplash",
     cache_dir: Optional[str] = None,
     use_clip: bool = True,
-    analyze: bool = True
+    analyze: bool = True,
 ):
     """Retrieve a single image and optionally analyze it"""
     import os
@@ -990,7 +1009,9 @@ def retrieve_single_command(
     sources = check_api_credentials()
     if not sources.get(source.lower()):
         print(f"\n✗ Error: {source} API not configured")
-        print(f"Set {source.upper()}_ACCESS_KEY or {source.upper()}_API_KEY environment variable")
+        print(
+            f"Set {source.upper()}_ACCESS_KEY or {source.upper()}_API_KEY environment variable"
+        )
         sys.exit(1)
 
     # Create output directory
@@ -998,7 +1019,7 @@ def retrieve_single_command(
 
     # Set up cache
     if cache_dir is None:
-        cache_dir = os.path.expanduser('~/.nimitz_cache')
+        cache_dir = os.path.expanduser("~/.nimitz_cache")
 
     print(f"\n Retrieving image for: {description}")
     print(f" Source: {source}")
@@ -1027,7 +1048,7 @@ def retrieve_single_command(
             characteristics=characteristics,
             model=model,
             device=device,
-            num_candidates=5
+            num_candidates=5,
         )
 
         print(f"\n✓ Image retrieved successfully!")
@@ -1037,19 +1058,17 @@ def retrieve_single_command(
         print(f"   Attribution: {metadata['attribution']}")
 
         # Save metadata
-        metadata_path = os.path.join(output_dir, 'metadata.json')
+        metadata_path = os.path.join(output_dir, "metadata.json")
         metadata_list = []
         if os.path.exists(metadata_path):
-            with open(metadata_path, 'r') as f:
+            with open(metadata_path, "r") as f:
                 metadata_list = json.load(f)
 
-        metadata_list.append({
-            'description': description,
-            'image_path': image_path,
-            'metadata': metadata
-        })
+        metadata_list.append(
+            {"description": description, "image_path": image_path, "metadata": metadata}
+        )
 
-        with open(metadata_path, 'w') as f:
+        with open(metadata_path, "w") as f:
             json.dump(metadata_list, f, indent=2)
 
         # Optionally analyze the image
@@ -1064,13 +1083,13 @@ def retrieve_single_command(
 
 def retrieve_batch_command(
     descriptions_file: str,
-    output_dir: str = './nimitz_output',
-    preset: str = 'photography',
-    source: str = 'unsplash',
+    output_dir: str = "./nimitz_output",
+    preset: str = "photography",
+    source: str = "unsplash",
     cache_dir: Optional[str] = None,
     use_clip: bool = True,
     analyze: bool = True,
-    use_placeholder: bool = True
+    use_placeholder: bool = True,
 ):
     """Retrieve multiple images and generate cards"""
     import os
@@ -1081,7 +1100,9 @@ def retrieve_batch_command(
     sources = check_api_credentials()
     if not sources.get(source.lower()):
         print(f"\n✗ Error: {source} API not configured")
-        print(f"Set {source.upper()}_ACCESS_KEY or {source.upper()}_API_KEY environment variable")
+        print(
+            f"Set {source.upper()}_ACCESS_KEY or {source.upper()}_API_KEY environment variable"
+        )
         sys.exit(1)
 
     # Load descriptions
@@ -1093,18 +1114,18 @@ def retrieve_batch_command(
         sys.exit(1)
 
     # Support different file formats
-    if descriptions_path.suffix == '.json':
-        with open(descriptions_path, 'r') as f:
+    if descriptions_path.suffix == ".json":
+        with open(descriptions_path, "r") as f:
             data = json.load(f)
             if isinstance(data, list):
                 descriptions = data
-            elif isinstance(data, dict) and 'descriptions' in data:
-                descriptions = data['descriptions']
+            elif isinstance(data, dict) and "descriptions" in data:
+                descriptions = data["descriptions"]
             else:
                 print("✗ Error: JSON must be a list or have 'descriptions' key")
                 sys.exit(1)
-    elif descriptions_path.suffix in ['.txt', '.csv']:
-        with open(descriptions_path, 'r') as f:
+    elif descriptions_path.suffix in [".txt", ".csv"]:
+        with open(descriptions_path, "r") as f:
             descriptions = [line.strip() for line in f if line.strip()]
     else:
         print(f"✗ Error: Unsupported file format: {descriptions_path.suffix}")
@@ -1128,7 +1149,7 @@ def retrieve_batch_command(
 
     # Set up cache
     if cache_dir is None:
-        cache_dir = os.path.expanduser('~/.nimitz_cache')
+        cache_dir = os.path.expanduser("~/.nimitz_cache")
 
     # Initialize CLIP if needed
     model, device = None, None
@@ -1154,7 +1175,7 @@ def retrieve_batch_command(
         characteristics=characteristics if use_clip else None,
         model=model,
         device=device,
-        num_candidates=5 if use_clip else 1
+        num_candidates=5 if use_clip else 1,
     )
 
     # Handle failed retrievals with placeholders
@@ -1170,28 +1191,33 @@ def retrieve_batch_command(
             if use_placeholder:
                 # Create placeholder image
                 placeholder_path = os.path.join(
-                    output_dir,
-                    f"placeholder_{len(failed)}.jpg"
+                    output_dir, f"placeholder_{len(failed)}.jpg"
                 )
                 if create_placeholder_image(placeholder_path, description):
                     print(f" Created placeholder for: {description}")
-                    successful.append((description, placeholder_path, {
-                        'source': 'placeholder',
-                        'description': description,
-                        'error': metadata.get('error', 'Unknown error')
-                    }))
+                    successful.append(
+                        (
+                            description,
+                            placeholder_path,
+                            {
+                                "source": "placeholder",
+                                "description": description,
+                                "error": metadata.get("error", "Unknown error"),
+                            },
+                        )
+                    )
 
     # Save metadata
-    metadata_path = os.path.join(output_dir, 'retrieval_metadata.json')
-    with open(metadata_path, 'w') as f:
-        json.dump([
-            {
-                'description': desc,
-                'image_path': path,
-                'metadata': meta
-            }
-            for desc, path, meta in successful
-        ], f, indent=2)
+    metadata_path = os.path.join(output_dir, "retrieval_metadata.json")
+    with open(metadata_path, "w") as f:
+        json.dump(
+            [
+                {"description": desc, "image_path": path, "metadata": meta}
+                for desc, path, meta in successful
+            ],
+            f,
+            indent=2,
+        )
 
     print(f"\n Retrieval complete!")
     print(f"   Successful: {len(successful)}")
@@ -1216,46 +1242,42 @@ def retrieve_batch_command(
         all_prompts = []
         prompt_char_map = []
         for char_name, char_data in characteristics.items():
-            for prompt in char_data['prompts']:
+            for prompt in char_data["prompts"]:
                 all_prompts.append(prompt)
                 prompt_char_map.append(char_name)
 
         text_features = extract_text_features(all_prompts, model, device)
         similarity_matrix = compute_similarity_matrices(
-            image_features,
-            text_features,
-            characteristics
+            image_features, text_features, characteristics
         )
 
         # Generate cards
         cards = generate_image_cards_data(
-            image_paths,
-            similarity_matrix,
-            characteristics
+            image_paths, similarity_matrix, characteristics
         )
 
         # Add retrieval metadata to cards
         for i, card in enumerate(cards):
             if i < len(successful):
                 desc, _, meta = successful[i]
-                card['retrieval_metadata'] = {
-                    'description': desc,
-                    'source': meta.get('source', 'unknown'),
-                    'author': meta.get('author'),
-                    'license': meta.get('license'),
-                    'attribution': meta.get('attribution'),
-                    'source_url': meta.get('source_url')
+                card["retrieval_metadata"] = {
+                    "description": desc,
+                    "source": meta.get("source", "unknown"),
+                    "author": meta.get("author"),
+                    "license": meta.get("license"),
+                    "attribution": meta.get("attribution"),
+                    "source_url": meta.get("source_url"),
                 }
 
         # Enhance with gaming stats
         cards = enhance_cards_with_gaming_stats(cards)
 
         # Export results
-        cards_json_path = os.path.join(output_dir, 'cards.json')
-        with open(cards_json_path, 'w') as f:
+        cards_json_path = os.path.join(output_dir, "cards.json")
+        with open(cards_json_path, "w") as f:
             json.dump(cards, f, indent=2)
 
-        cards_csv_path = os.path.join(output_dir, 'cards.csv')
+        cards_csv_path = os.path.join(output_dir, "cards.csv")
         export_cards_to_csv(cards, cards_csv_path)
 
         print(f"\n Cards generated!")
@@ -1263,7 +1285,7 @@ def retrieve_batch_command(
         print(f"   CSV: {cards_csv_path}")
 
         # Create visual cards
-        visual_output = os.path.join(output_dir, 'visual_cards')
+        visual_output = os.path.join(output_dir, "visual_cards")
         create_visual_image_cards(cards, visual_output)
         print(f"   Visual cards: {visual_output}/")
 
@@ -1275,8 +1297,10 @@ def retrieve_discover_command(
     max_results: int = 20,
     interactive: bool = True,
     auto_retrieve: bool = False,
-    preset: str = 'photography',
-    source: str = 'unsplash'
+    preset: str = "photography",
+    source: str = "unsplash",
+    use_llm_filter: bool = True,
+    llm_provider: str = "auto",
 ):
     """Discover entities from web search and generate batch file"""
     import os
@@ -1299,7 +1323,9 @@ def retrieve_discover_command(
             output_file=output_file,
             description_template=template,
             max_results=max_results,
-            interactive=interactive
+            interactive=interactive,
+            use_llm_filter=use_llm_filter,
+            llm_provider=llm_provider,
         )
 
         print(f"\n✓ Discovery complete!")
@@ -1315,11 +1341,13 @@ def retrieve_discover_command(
             if not sources.get(source.lower()):
                 print(f"\n⚠ Warning: {source} API not configured")
                 print(f"Skipping automatic retrieval. Run manually with:")
-                print(f"  nimitz retrieve batch {output_file} --source {source} --preset {preset}")
+                print(
+                    f"  nimitz retrieve batch {output_file} --source {source} --preset {preset}"
+                )
                 return
 
             # Run batch retrieval
-            output_dir = os.path.splitext(output_file)[0] + '_cards'
+            output_dir = os.path.splitext(output_file)[0] + "_cards"
             print(f"\n Retrieving images and generating cards...")
             print(f" Output directory: {output_dir}")
 
@@ -1331,7 +1359,7 @@ def retrieve_discover_command(
                 cache_dir=None,
                 use_clip=True,
                 analyze=True,
-                use_placeholder=True
+                use_placeholder=True,
             )
 
         else:
@@ -1345,6 +1373,7 @@ def retrieve_discover_command(
     except Exception as e:
         print(f"\n✗ Unexpected Error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 
@@ -1352,8 +1381,8 @@ def retrieve_discover_command(
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        prog='nimitz',
-        description='NIMITZ - Transform images into collectible cards with quantified statistics',
+        prog="nimitz",
+        description="NIMITZ - Transform images into collectible cards with quantified statistics",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -1367,119 +1396,95 @@ LLM Mode (no CLIP required):
   nimitz llm describe photo.jpg         # Describe image with LLM
   nimitz llm analyze ./photos           # Analyze directory with LLM
   nimitz llm vocab ./photos -o vocab.json  # Generate vocabulary with LLM
-        """
+        """,
     )
 
-    subparsers = parser.add_subparsers(dest='command', help='Commands')
+    subparsers = parser.add_subparsers(dest="command", help="Commands")
 
     # -------------------------------------------------------------------------
     # analyze command
     # -------------------------------------------------------------------------
     analyze_parser = subparsers.add_parser(
-        'analyze',
-        help='Analyze all images in a directory'
+        "analyze", help="Analyze all images in a directory"
     )
     analyze_parser.add_argument(
-        'directory',
-        help='Directory containing images to analyze'
+        "directory", help="Directory containing images to analyze"
     )
     analyze_parser.add_argument(
-        '-p', '--preset',
+        "-p",
+        "--preset",
         choices=list_available_presets(),
-        default='photography',
-        help='Vocabulary preset (default: photography)'
+        default="photography",
+        help="Vocabulary preset (default: photography)",
     )
     analyze_parser.add_argument(
-        '-o', '--output',
-        help='Output directory (default: <directory>/nimitz_output)'
+        "-o", "--output", help="Output directory (default: <directory>/nimitz_output)"
     )
     analyze_parser.add_argument(
-        '-n', '--clusters',
-        type=int,
-        default=5,
-        help='Number of clusters (default: 5)'
+        "-n", "--clusters", type=int, default=5, help="Number of clusters (default: 5)"
     )
     analyze_parser.add_argument(
-        '--no-visual',
-        action='store_true',
-        help='Skip visual card generation (faster)'
+        "--no-visual", action="store_true", help="Skip visual card generation (faster)"
     )
     analyze_parser.add_argument(
-        '-q', '--quiet',
-        action='store_true',
-        help='Minimal output'
+        "-q", "--quiet", action="store_true", help="Minimal output"
     )
 
     # -------------------------------------------------------------------------
     # describe command
     # -------------------------------------------------------------------------
-    describe_parser = subparsers.add_parser(
-        'describe',
-        help='Analyze a single image'
-    )
+    describe_parser = subparsers.add_parser("describe", help="Analyze a single image")
+    describe_parser.add_argument("image", help="Image file to analyze")
     describe_parser.add_argument(
-        'image',
-        help='Image file to analyze'
-    )
-    describe_parser.add_argument(
-        '-p', '--preset',
+        "-p",
+        "--preset",
         choices=list_available_presets(),
-        default='photography',
-        help='Vocabulary preset (default: photography)'
+        default="photography",
+        help="Vocabulary preset (default: photography)",
     )
     describe_parser.add_argument(
-        '-v', '--verbose',
-        action='store_true',
-        help='Show detailed analysis'
+        "-v", "--verbose", action="store_true", help="Show detailed analysis"
     )
 
     # -------------------------------------------------------------------------
     # presets command
     # -------------------------------------------------------------------------
-    subparsers.add_parser(
-        'presets',
-        help='List available vocabulary presets'
-    )
+    subparsers.add_parser("presets", help="List available vocabulary presets")
 
     # -------------------------------------------------------------------------
     # wizard command
     # -------------------------------------------------------------------------
     wizard_parser = subparsers.add_parser(
-        'wizard',
-        help='Interactive wizard to create custom vocabularies'
+        "wizard", help="Interactive wizard to create custom vocabularies"
     )
     wizard_parser.add_argument(
-        '-d', '--directory',
-        help='Directory with sample images for suggestions'
+        "-d", "--directory", help="Directory with sample images for suggestions"
     )
     wizard_parser.add_argument(
-        '-o', '--output',
-        help='Output file for saving the vocabulary (JSON)'
+        "-o", "--output", help="Output file for saving the vocabulary (JSON)"
     )
     wizard_parser.add_argument(
-        '--analyze',
-        action='store_true',
-        help='After creating vocabulary, analyze images immediately'
+        "--analyze",
+        action="store_true",
+        help="After creating vocabulary, analyze images immediately",
     )
 
     # -------------------------------------------------------------------------
     # validate command
     # -------------------------------------------------------------------------
     validate_parser = subparsers.add_parser(
-        'validate',
-        help='Validate a vocabulary file'
+        "validate", help="Validate a vocabulary file"
     )
     validate_parser.add_argument(
-        'vocabulary_file',
-        help='JSON file with vocabulary to validate'
+        "vocabulary_file", help="JSON file with vocabulary to validate"
     )
 
     # -------------------------------------------------------------------------
     # llm command (with subcommands)
     # -------------------------------------------------------------------------
     llm_parser = subparsers.add_parser(
-        'llm',
-        help='LLM-based analysis (no CLIP required)',
+        "llm",
+        help="LLM-based analysis (no CLIP required)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Subcommands:
@@ -1493,203 +1498,161 @@ Examples:
   nimitz llm describe photo.jpg
   nimitz llm analyze ./photos --provider anthropic
   nimitz llm vocab ./photos -o my_vocabulary.json
-        """
+        """,
     )
-    llm_subparsers = llm_parser.add_subparsers(dest='llm_command', help='LLM subcommands')
+    llm_subparsers = llm_parser.add_subparsers(
+        dest="llm_command", help="LLM subcommands"
+    )
 
     # llm status
-    llm_subparsers.add_parser(
-        'status',
-        help='Check LLM provider availability'
-    )
+    llm_subparsers.add_parser("status", help="Check LLM provider availability")
 
     # llm describe
     llm_describe_parser = llm_subparsers.add_parser(
-        'describe',
-        help='Analyze a single image with LLM'
+        "describe", help="Analyze a single image with LLM"
+    )
+    llm_describe_parser.add_argument("image", help="Image file to analyze")
+    llm_describe_parser.add_argument(
+        "--provider",
+        choices=["openai", "anthropic", "gemini", "auto"],
+        default="auto",
+        help="LLM provider (default: auto)",
     )
     llm_describe_parser.add_argument(
-        'image',
-        help='Image file to analyze'
+        "-v", "--verbose", action="store_true", help="Show detailed analysis"
     )
     llm_describe_parser.add_argument(
-        '--provider',
-        choices=['openai', 'anthropic', 'gemini', 'auto'],
-        default='auto',
-        help='LLM provider (default: auto)'
-    )
-    llm_describe_parser.add_argument(
-        '-v', '--verbose',
-        action='store_true',
-        help='Show detailed analysis'
-    )
-    llm_describe_parser.add_argument(
-        '--lang',
-        choices=['en', 'it'],
-        default='en',
-        help='Response language (default: en)'
+        "--lang",
+        choices=["en", "it"],
+        default="en",
+        help="Response language (default: en)",
     )
 
     # llm analyze
     llm_analyze_parser = llm_subparsers.add_parser(
-        'analyze',
-        help='Analyze a directory of images with LLM'
+        "analyze", help="Analyze a directory of images with LLM"
     )
     llm_analyze_parser.add_argument(
-        'directory',
-        help='Directory containing images to analyze'
+        "directory", help="Directory containing images to analyze"
     )
     llm_analyze_parser.add_argument(
-        '-p', '--preset',
+        "-p",
+        "--preset",
         choices=list_available_presets(),
-        default='photography',
-        help='Vocabulary preset (default: photography)'
+        default="photography",
+        help="Vocabulary preset (default: photography)",
+    )
+    llm_analyze_parser.add_argument("-o", "--output", help="Output directory")
+    llm_analyze_parser.add_argument(
+        "--provider",
+        choices=["openai", "anthropic", "gemini", "auto"],
+        default="auto",
+        help="LLM provider (default: auto)",
     )
     llm_analyze_parser.add_argument(
-        '-o', '--output',
-        help='Output directory'
+        "--no-visual", action="store_true", help="Skip visual card generation"
     )
     llm_analyze_parser.add_argument(
-        '--provider',
-        choices=['openai', 'anthropic', 'gemini', 'auto'],
-        default='auto',
-        help='LLM provider (default: auto)'
+        "-q", "--quiet", action="store_true", help="Minimal output"
     )
     llm_analyze_parser.add_argument(
-        '--no-visual',
-        action='store_true',
-        help='Skip visual card generation'
-    )
-    llm_analyze_parser.add_argument(
-        '-q', '--quiet',
-        action='store_true',
-        help='Minimal output'
-    )
-    llm_analyze_parser.add_argument(
-        '--lang',
-        choices=['en', 'it'],
-        default='en',
-        help='Response language (default: en)'
+        "--lang",
+        choices=["en", "it"],
+        default="en",
+        help="Response language (default: en)",
     )
 
     # llm vocab
     llm_vocab_parser = llm_subparsers.add_parser(
-        'vocab',
-        help='Generate vocabulary from images using LLM'
+        "vocab", help="Generate vocabulary from images using LLM"
+    )
+    llm_vocab_parser.add_argument("directory", help="Directory with sample images")
+    llm_vocab_parser.add_argument(
+        "-o", "--output", help="Output file for vocabulary (JSON)"
     )
     llm_vocab_parser.add_argument(
-        'directory',
-        help='Directory with sample images'
+        "--provider",
+        choices=["openai", "anthropic", "gemini", "auto"],
+        default="auto",
+        help="LLM provider (default: auto)",
     )
     llm_vocab_parser.add_argument(
-        '-o', '--output',
-        help='Output file for vocabulary (JSON)'
-    )
-    llm_vocab_parser.add_argument(
-        '--provider',
-        choices=['openai', 'anthropic', 'gemini', 'auto'],
-        default='auto',
-        help='LLM provider (default: auto)'
-    )
-    llm_vocab_parser.add_argument(
-        '-n', '--samples',
+        "-n",
+        "--samples",
         type=int,
         default=5,
-        help='Number of images to sample (default: 5)'
+        help="Number of images to sample (default: 5)",
     )
     llm_vocab_parser.add_argument(
-        '--lang',
-        choices=['en', 'it'],
-        default='en',
-        help='Response language (default: en)'
+        "--lang",
+        choices=["en", "it"],
+        default="en",
+        help="Response language (default: en)",
     )
 
     # -------------------------------------------------------------------------
     # compare command (Gaming)
     # -------------------------------------------------------------------------
     compare_parser = subparsers.add_parser(
-        'compare',
-        help='Compare two cards to see who wins'
+        "compare", help="Compare two cards to see who wins"
     )
     compare_parser.add_argument(
-        'cards_file',
-        help='JSON file with card data (from nimitz analyze)'
+        "cards_file", help="JSON file with card data (from nimitz analyze)"
     )
     compare_parser.add_argument(
-        'card1',
-        help='First card name (partial match supported)'
+        "card1", help="First card name (partial match supported)"
     )
     compare_parser.add_argument(
-        'card2',
-        help='Second card name (partial match supported)'
+        "card2", help="Second card name (partial match supported)"
     )
     compare_parser.add_argument(
-        '-c', '--category',
-        help='Specific characteristic to compare (default: overall power)'
+        "-c",
+        "--category",
+        help="Specific characteristic to compare (default: overall power)",
     )
 
     # -------------------------------------------------------------------------
     # battle command (Gaming)
     # -------------------------------------------------------------------------
     battle_parser = subparsers.add_parser(
-        'battle',
-        help='Full battle between two cards across multiple rounds'
+        "battle", help="Full battle between two cards across multiple rounds"
     )
+    battle_parser.add_argument("cards_file", help="JSON file with card data")
+    battle_parser.add_argument("card1", help="First card name")
+    battle_parser.add_argument("card2", help="Second card name")
     battle_parser.add_argument(
-        'cards_file',
-        help='JSON file with card data'
-    )
-    battle_parser.add_argument(
-        'card1',
-        help='First card name'
-    )
-    battle_parser.add_argument(
-        'card2',
-        help='Second card name'
-    )
-    battle_parser.add_argument(
-        '-r', '--rounds',
+        "-r",
+        "--rounds",
         type=int,
         default=5,
-        help='Number of battle rounds (default: 5)'
+        help="Number of battle rounds (default: 5)",
     )
 
     # -------------------------------------------------------------------------
     # rarity command (Gaming)
     # -------------------------------------------------------------------------
-    rarity_parser = subparsers.add_parser(
-        'rarity',
-        help='Show card rarity rankings'
-    )
+    rarity_parser = subparsers.add_parser("rarity", help="Show card rarity rankings")
+    rarity_parser.add_argument("cards_file", help="JSON file with card data")
     rarity_parser.add_argument(
-        'cards_file',
-        help='JSON file with card data'
-    )
-    rarity_parser.add_argument(
-        '-n', '--top',
+        "-n",
+        "--top",
         type=int,
         default=10,
-        help='Number of cards to show (default: 10)'
+        help="Number of cards to show (default: 10)",
     )
 
     # -------------------------------------------------------------------------
     # stats command (Gaming)
     # -------------------------------------------------------------------------
-    stats_parser = subparsers.add_parser(
-        'stats',
-        help='Show collection statistics'
-    )
-    stats_parser.add_argument(
-        'cards_file',
-        help='JSON file with card data'
-    )
+    stats_parser = subparsers.add_parser("stats", help="Show collection statistics")
+    stats_parser.add_argument("cards_file", help="JSON file with card data")
 
     # -------------------------------------------------------------------------
     # deck command (Gaming - with subcommands)
     # -------------------------------------------------------------------------
     deck_parser = subparsers.add_parser(
-        'deck',
-        help='Deck management (create, show, add, remove cards)',
+        "deck",
+        help="Deck management (create, show, add, remove cards)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Subcommands:
@@ -1705,135 +1668,91 @@ Examples:
   nimitz deck show my_deck.json --list
   nimitz deck add my_deck.json cards.json photo1.jpg photo2.jpg
   nimitz deck remove my_deck.json photo1.jpg
-        """
+        """,
     )
-    deck_subparsers = deck_parser.add_subparsers(dest='deck_command', help='Deck subcommands')
+    deck_subparsers = deck_parser.add_subparsers(
+        dest="deck_command", help="Deck subcommands"
+    )
 
     # deck create
-    deck_create_parser = deck_subparsers.add_parser(
-        'create',
-        help='Create a new deck'
+    deck_create_parser = deck_subparsers.add_parser("create", help="Create a new deck")
+    deck_create_parser.add_argument(
+        "cards_file", help="JSON file with card data to choose from"
     )
     deck_create_parser.add_argument(
-        'cards_file',
-        help='JSON file with card data to choose from'
+        "-o", "--output", required=True, help="Output file for the deck"
     )
     deck_create_parser.add_argument(
-        '-o', '--output',
-        required=True,
-        help='Output file for the deck'
+        "-n", "--name", default="My Deck", help="Deck name (default: My Deck)"
     )
     deck_create_parser.add_argument(
-        '-n', '--name',
-        default='My Deck',
-        help='Deck name (default: My Deck)'
+        "--top", type=int, help="Select top N cards by power level"
     )
     deck_create_parser.add_argument(
-        '--top',
-        type=int,
-        help='Select top N cards by power level'
-    )
-    deck_create_parser.add_argument(
-        '--cards',
-        nargs='+',
-        help='Specific card names to include'
+        "--cards", nargs="+", help="Specific card names to include"
     )
 
     # deck show
-    deck_show_parser = deck_subparsers.add_parser(
-        'show',
-        help='Show deck information'
-    )
+    deck_show_parser = deck_subparsers.add_parser("show", help="Show deck information")
+    deck_show_parser.add_argument("deck_file", help="Deck file to show")
     deck_show_parser.add_argument(
-        'deck_file',
-        help='Deck file to show'
-    )
-    deck_show_parser.add_argument(
-        '-l', '--list',
-        action='store_true',
-        help='List all cards in deck'
+        "-l", "--list", action="store_true", help="List all cards in deck"
     )
 
     # deck add
-    deck_add_parser = deck_subparsers.add_parser(
-        'add',
-        help='Add cards to a deck'
-    )
-    deck_add_parser.add_argument(
-        'deck_file',
-        help='Deck file to modify'
-    )
-    deck_add_parser.add_argument(
-        'cards_file',
-        help='JSON file with card data'
-    )
-    deck_add_parser.add_argument(
-        'card_names',
-        nargs='+',
-        help='Card names to add'
-    )
+    deck_add_parser = deck_subparsers.add_parser("add", help="Add cards to a deck")
+    deck_add_parser.add_argument("deck_file", help="Deck file to modify")
+    deck_add_parser.add_argument("cards_file", help="JSON file with card data")
+    deck_add_parser.add_argument("card_names", nargs="+", help="Card names to add")
 
     # deck remove
     deck_remove_parser = deck_subparsers.add_parser(
-        'remove',
-        help='Remove cards from a deck'
+        "remove", help="Remove cards from a deck"
     )
+    deck_remove_parser.add_argument("deck_file", help="Deck file to modify")
     deck_remove_parser.add_argument(
-        'deck_file',
-        help='Deck file to modify'
-    )
-    deck_remove_parser.add_argument(
-        'card_names',
-        nargs='+',
-        help='Card names to remove'
+        "card_names", nargs="+", help="Card names to remove"
     )
 
     # -------------------------------------------------------------------------
     # export-pdf command (Gaming)
     # -------------------------------------------------------------------------
     export_pdf_parser = subparsers.add_parser(
-        'export-pdf',
-        help='Export cards as printable PDF'
+        "export-pdf", help="Export cards as printable PDF"
     )
     export_pdf_parser.add_argument(
-        'cards_file',
-        help='JSON file with card data (or deck file)'
+        "cards_file", help="JSON file with card data (or deck file)"
     )
     export_pdf_parser.add_argument(
-        '-o', '--output',
-        default='cards.pdf',
-        help='Output PDF file (default: cards.pdf)'
+        "-o",
+        "--output",
+        default="cards.pdf",
+        help="Output PDF file (default: cards.pdf)",
     )
     export_pdf_parser.add_argument(
-        '--size',
-        choices=['A4', 'Letter'],
-        default='A4',
-        help='Page size (default: A4)'
+        "--size", choices=["A4", "Letter"], default="A4", help="Page size (default: A4)"
     )
 
     # -------------------------------------------------------------------------
     # export-png command (Gaming)
     # -------------------------------------------------------------------------
     export_png_parser = subparsers.add_parser(
-        'export-png',
-        help='Export cards as individual PNG files'
+        "export-png", help="Export cards as individual PNG files"
     )
+    export_png_parser.add_argument("cards_file", help="JSON file with card data")
     export_png_parser.add_argument(
-        'cards_file',
-        help='JSON file with card data'
-    )
-    export_png_parser.add_argument(
-        '-o', '--output',
-        default='./card_images',
-        help='Output directory (default: ./card_images)'
+        "-o",
+        "--output",
+        default="./card_images",
+        help="Output directory (default: ./card_images)",
     )
 
     # -------------------------------------------------------------------------
     # retrieve command (Image Retrieval)
     # -------------------------------------------------------------------------
     retrieve_parser = subparsers.add_parser(
-        'retrieve',
-        help='Retrieve images from the web and generate cards',
+        "retrieve",
+        help="Retrieve images from the web and generate cards",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Image Retrieval: Create cards from text descriptions by fetching images from the web.
@@ -1849,152 +1768,160 @@ Examples:
   nimitz retrieve single "Golden Gate Bridge at sunset"
   nimitz retrieve batch players.txt --preset art
   nimitz retrieve discover "Parma Clima Baseball roster" -o players.txt --auto
-        """
+        """,
     )
-    retrieve_subparsers = retrieve_parser.add_subparsers(dest='retrieve_command', help='Retrieve subcommands')
+    retrieve_subparsers = retrieve_parser.add_subparsers(
+        dest="retrieve_command", help="Retrieve subcommands"
+    )
 
     # retrieve status
     retrieve_subparsers.add_parser(
-        'status',
-        help='Check image retrieval API configuration'
+        "status", help="Check image retrieval API configuration"
     )
 
     # retrieve single
     retrieve_single_parser = retrieve_subparsers.add_parser(
-        'single',
-        help='Retrieve a single image by description'
+        "single", help="Retrieve a single image by description"
     )
     retrieve_single_parser.add_argument(
-        'description',
-        help='Text description of the image to retrieve'
+        "description", help="Text description of the image to retrieve"
     )
     retrieve_single_parser.add_argument(
-        '-o', '--output',
-        default='./nimitz_output',
-        help='Output directory (default: ./nimitz_output)'
+        "-o",
+        "--output",
+        default="./nimitz_output",
+        help="Output directory (default: ./nimitz_output)",
     )
     retrieve_single_parser.add_argument(
-        '-p', '--preset',
-        default='photography',
-        help='Vocabulary preset (default: photography)'
+        "-p",
+        "--preset",
+        default="photography",
+        help="Vocabulary preset (default: photography)",
     )
     retrieve_single_parser.add_argument(
-        '-s', '--source',
-        choices=['unsplash', 'pexels'],
-        default='unsplash',
-        help='Image source (default: unsplash)'
+        "-s",
+        "--source",
+        choices=["unsplash", "pexels"],
+        default="unsplash",
+        help="Image source (default: unsplash)",
     )
     retrieve_single_parser.add_argument(
-        '--cache',
-        help='Cache directory (default: ~/.nimitz_cache)'
+        "--cache", help="Cache directory (default: ~/.nimitz_cache)"
     )
     retrieve_single_parser.add_argument(
-        '--no-clip',
-        action='store_true',
-        help='Disable CLIP-based image selection'
+        "--no-clip", action="store_true", help="Disable CLIP-based image selection"
     )
     retrieve_single_parser.add_argument(
-        '--no-analyze',
-        action='store_true',
-        help='Skip image analysis after retrieval'
+        "--no-analyze", action="store_true", help="Skip image analysis after retrieval"
     )
 
     # retrieve batch
     retrieve_batch_parser = retrieve_subparsers.add_parser(
-        'batch',
-        help='Retrieve multiple images from a file'
+        "batch", help="Retrieve multiple images from a file"
     )
     retrieve_batch_parser.add_argument(
-        'descriptions_file',
-        help='File with descriptions (.txt, .csv, or .json)'
+        "descriptions_file", help="File with descriptions (.txt, .csv, or .json)"
     )
     retrieve_batch_parser.add_argument(
-        '-o', '--output',
-        default='./nimitz_output',
-        help='Output directory (default: ./nimitz_output)'
+        "-o",
+        "--output",
+        default="./nimitz_output",
+        help="Output directory (default: ./nimitz_output)",
     )
     retrieve_batch_parser.add_argument(
-        '-p', '--preset',
-        default='photography',
-        help='Vocabulary preset (default: photography)'
+        "-p",
+        "--preset",
+        default="photography",
+        help="Vocabulary preset (default: photography)",
     )
     retrieve_batch_parser.add_argument(
-        '-s', '--source',
-        choices=['unsplash', 'pexels'],
-        default='unsplash',
-        help='Image source (default: unsplash)'
+        "-s",
+        "--source",
+        choices=["unsplash", "pexels"],
+        default="unsplash",
+        help="Image source (default: unsplash)",
     )
     retrieve_batch_parser.add_argument(
-        '--cache',
-        help='Cache directory (default: ~/.nimitz_cache)'
+        "--cache", help="Cache directory (default: ~/.nimitz_cache)"
     )
     retrieve_batch_parser.add_argument(
-        '--no-clip',
-        action='store_true',
-        help='Disable CLIP-based image selection'
+        "--no-clip", action="store_true", help="Disable CLIP-based image selection"
     )
     retrieve_batch_parser.add_argument(
-        '--no-analyze',
-        action='store_true',
-        help='Skip card generation (only retrieve images)'
+        "--no-analyze",
+        action="store_true",
+        help="Skip card generation (only retrieve images)",
     )
     retrieve_batch_parser.add_argument(
-        '--no-placeholder',
-        action='store_true',
-        help='Skip creating placeholder images for failed retrievals'
+        "--no-placeholder",
+        action="store_true",
+        help="Skip creating placeholder images for failed retrievals",
     )
 
     # retrieve discover
     retrieve_discover_parser = retrieve_subparsers.add_parser(
-        'discover',
-        help='Discover entities from web search and create batch file',
+        "discover",
+        help="Discover entities from web search and create batch file",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   nimitz retrieve discover "Parma Clima Baseball team roster" -o players.txt
   nimitz retrieve discover "San Francisco Giants 2024" -o giants.txt --template "{name}, baseball player"
   nimitz retrieve discover "Italian Renaissance painters" -o painters.json --auto
-        """
+        """,
     )
     retrieve_discover_parser.add_argument(
-        'query',
-        help='Search query to discover entities'
+        "query", help="Search query to discover entities"
     )
     retrieve_discover_parser.add_argument(
-        '-o', '--output',
+        "-o",
+        "--output",
         required=True,
-        help='Output file for discovered entities (.txt, .json, .csv)'
+        help="Output file for discovered entities (.txt, .json, .csv)",
     )
     retrieve_discover_parser.add_argument(
-        '-t', '--template',
-        help='Description template (use {name} placeholder, e.g., "{name}, baseball player")'
+        "-t",
+        "--template",
+        help='Description template (use {name} placeholder, e.g., "{name}, baseball player")',
     )
     retrieve_discover_parser.add_argument(
-        '-n', '--max-results',
+        "-n",
+        "--max-results",
         type=int,
         default=20,
-        help='Maximum number of entities to discover (default: 20)'
+        help="Maximum number of entities to discover (default: 20)",
     )
     retrieve_discover_parser.add_argument(
-        '--no-interactive',
-        action='store_true',
-        help='Skip interactive selection'
+        "--no-interactive", action="store_true", help="Skip interactive selection"
     )
     retrieve_discover_parser.add_argument(
-        '--auto',
-        action='store_true',
-        help='Automatically retrieve images after discovery'
+        "--auto",
+        action="store_true",
+        help="Automatically retrieve images after discovery",
     )
     retrieve_discover_parser.add_argument(
-        '-p', '--preset',
-        default='photography',
-        help='Preset for auto-retrieval (default: photography)'
+        "-p",
+        "--preset",
+        default="photography",
+        help="Preset for auto-retrieval (default: photography)",
     )
     retrieve_discover_parser.add_argument(
-        '-s', '--source',
-        choices=['unsplash', 'pexels'],
-        default='unsplash',
-        help='Source for auto-retrieval (default: unsplash)'
+        "-s",
+        "--source",
+        choices=["unsplash", "pexels"],
+        default="unsplash",
+        help="Source for auto-retrieval (default: unsplash)",
+    )
+    retrieve_discover_parser.add_argument(
+        "--no-llm-filter",
+        action="store_true",
+        help="Disable LLM-based filtering of person names (faster but less accurate)",
+    )
+    retrieve_discover_parser.add_argument(
+        "--llm-provider",
+        choices=["auto", "anthropic", "gemini", "openai", "vllm"],
+        default="auto",
+        help="LLM provider for filtering (default: auto-detect). Use 'vllm' for custom OpenAI-compatible endpoints",
     )
 
     # Parse arguments
@@ -2005,53 +1932,51 @@ Examples:
         sys.exit(0)
 
     # Execute command
-    if args.command == 'analyze':
+    if args.command == "analyze":
         analyze_directory(
             directory=args.directory,
             preset=args.preset,
             output_dir=args.output,
             n_clusters=args.clusters,
             no_visual=args.no_visual,
-            quiet=args.quiet
+            quiet=args.quiet,
         )
 
-    elif args.command == 'describe':
+    elif args.command == "describe":
         describe_single_image(
-            image_path=args.image,
-            preset=args.preset,
-            verbose=args.verbose
+            image_path=args.image, preset=args.preset, verbose=args.verbose
         )
 
-    elif args.command == 'presets':
+    elif args.command == "presets":
         list_presets()
 
-    elif args.command == 'wizard':
+    elif args.command == "wizard":
         run_vocabulary_wizard(
             image_directory=args.directory,
             output_file=args.output,
-            analyze_after=args.analyze
+            analyze_after=args.analyze,
         )
 
-    elif args.command == 'validate':
+    elif args.command == "validate":
         validate_vocabulary_file(args.vocabulary_file)
 
-    elif args.command == 'llm':
+    elif args.command == "llm":
         if args.llm_command is None:
             llm_parser.print_help()
             sys.exit(0)
 
-        elif args.llm_command == 'status':
+        elif args.llm_command == "status":
             print_llm_status()
 
-        elif args.llm_command == 'describe':
+        elif args.llm_command == "describe":
             describe_single_image_llm(
                 image_path=args.image,
                 provider=args.provider,
                 verbose=args.verbose,
-                language=args.lang
+                language=args.lang,
             )
 
-        elif args.llm_command == 'analyze':
+        elif args.llm_command == "analyze":
             analyze_directory_llm(
                 directory=args.directory,
                 preset=args.preset,
@@ -2059,104 +1984,90 @@ Examples:
                 provider=args.provider,
                 no_visual=args.no_visual,
                 quiet=args.quiet,
-                language=args.lang
+                language=args.lang,
             )
 
-        elif args.llm_command == 'vocab':
+        elif args.llm_command == "vocab":
             generate_vocabulary_llm(
                 directory=args.directory,
                 output_file=args.output,
                 provider=args.provider,
                 num_samples=args.samples,
-                language=args.lang
+                language=args.lang,
             )
 
     # -------------------------------------------------------------------------
     # Gaming commands
     # -------------------------------------------------------------------------
-    elif args.command == 'compare':
+    elif args.command == "compare":
         compare_cards_command(
             cards_file=args.cards_file,
             card1_name=args.card1,
             card2_name=args.card2,
-            category=args.category
+            category=args.category,
         )
 
-    elif args.command == 'battle':
+    elif args.command == "battle":
         battle_cards_command(
             cards_file=args.cards_file,
             card1_name=args.card1,
             card2_name=args.card2,
-            rounds=args.rounds
+            rounds=args.rounds,
         )
 
-    elif args.command == 'rarity':
-        show_rarity_command(
-            cards_file=args.cards_file,
-            top_n=args.top
-        )
+    elif args.command == "rarity":
+        show_rarity_command(cards_file=args.cards_file, top_n=args.top)
 
-    elif args.command == 'stats':
+    elif args.command == "stats":
         show_stats_command(args.cards_file)
 
-    elif args.command == 'deck':
+    elif args.command == "deck":
         if args.deck_command is None:
             deck_parser.print_help()
             sys.exit(0)
 
-        elif args.deck_command == 'create':
+        elif args.deck_command == "create":
             deck_create_command(
                 cards_file=args.cards_file,
                 deck_name=args.name,
                 output_file=args.output,
                 card_names=args.cards,
-                top_n=args.top
+                top_n=args.top,
             )
 
-        elif args.deck_command == 'show':
-            deck_show_command(
-                deck_file=args.deck_file,
-                list_cards=args.list
-            )
+        elif args.deck_command == "show":
+            deck_show_command(deck_file=args.deck_file, list_cards=args.list)
 
-        elif args.deck_command == 'add':
+        elif args.deck_command == "add":
             deck_add_command(
                 deck_file=args.deck_file,
                 cards_file=args.cards_file,
-                card_names=args.card_names
+                card_names=args.card_names,
             )
 
-        elif args.deck_command == 'remove':
-            deck_remove_command(
-                deck_file=args.deck_file,
-                card_names=args.card_names
-            )
+        elif args.deck_command == "remove":
+            deck_remove_command(deck_file=args.deck_file, card_names=args.card_names)
 
-    elif args.command == 'export-pdf':
+    elif args.command == "export-pdf":
         export_pdf_command(
-            cards_file=args.cards_file,
-            output_file=args.output,
-            page_size=args.size
+            cards_file=args.cards_file, output_file=args.output, page_size=args.size
         )
 
-    elif args.command == 'export-png':
-        export_png_command(
-            cards_file=args.cards_file,
-            output_dir=args.output
-        )
+    elif args.command == "export-png":
+        export_png_command(cards_file=args.cards_file, output_dir=args.output)
 
     # -------------------------------------------------------------------------
     # Image Retrieval commands
     # -------------------------------------------------------------------------
-    elif args.command == 'retrieve':
+    elif args.command == "retrieve":
         if args.retrieve_command is None:
             retrieve_parser.print_help()
             sys.exit(0)
 
-        elif args.retrieve_command == 'status':
+        elif args.retrieve_command == "status":
             retrieve_status_command()
 
-        elif args.retrieve_command == 'single':
+        elif args.retrieve_command == "single":
             retrieve_single_command(
                 description=args.description,
                 output_dir=args.output,
@@ -2164,10 +2075,10 @@ Examples:
                 source=args.source,
                 cache_dir=args.cache,
                 use_clip=not args.no_clip,
-                analyze=not args.no_analyze
+                analyze=not args.no_analyze,
             )
 
-        elif args.retrieve_command == 'batch':
+        elif args.retrieve_command == "batch":
             retrieve_batch_command(
                 descriptions_file=args.descriptions_file,
                 output_dir=args.output,
@@ -2176,10 +2087,10 @@ Examples:
                 cache_dir=args.cache,
                 use_clip=not args.no_clip,
                 analyze=not args.no_analyze,
-                use_placeholder=not args.no_placeholder
+                use_placeholder=not args.no_placeholder,
             )
 
-        elif args.retrieve_command == 'discover':
+        elif args.retrieve_command == "discover":
             retrieve_discover_command(
                 query=args.query,
                 output_file=args.output,
@@ -2188,9 +2099,11 @@ Examples:
                 interactive=not args.no_interactive,
                 auto_retrieve=args.auto,
                 preset=args.preset,
-                source=args.source
+                source=args.source,
+                use_llm_filter=not args.no_llm_filter,
+                llm_provider=args.llm_provider,
             )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

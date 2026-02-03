@@ -1,0 +1,434 @@
+[
+  {
+    "name": "Ada Lovelace",
+    "image": "./informatici_cards/Ada_Lovelace__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 52,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 50
+    },
+    "avg_score": 50.4
+  },
+  {
+    "name": "Ada Lovelace",
+    "image": "./informatici_cards/Ada_Lovelace__mathematician_programmer.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 52,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 50
+    },
+    "avg_score": 50.4
+  },
+  {
+    "name": "Alan Turing",
+    "image": "./informatici_cards/Alan_Turing__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 51,
+      "uso_di_tecnologie_avanzate": 53,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.6
+  },
+  {
+    "name": "Andrei Alexandrescu",
+    "image": "./informatici_cards/Andrei_Alexandrescu__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Barbara Liskov",
+    "image": "./informatici_cards/Barbara_Liskov__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Bill Gates",
+    "image": "./informatici_cards/Bill_Gates__software_engineer.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 49,
+      "uso_di_tecnologie_avanzate": 50,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 51,
+      "openess": 50
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Bjarne Stroustrup",
+    "image": "./informatici_cards/Bjarne_Stroustrup__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Brian Kernighan",
+    "image": "./informatici_cards/Brian_Kernighan__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Claude Shannon",
+    "image": "./informatici_cards/Claude_Shannon__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 49,
+      "uso_di_tecnologie_avanzate": 50,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 49,
+      "openess": 48
+    },
+    "avg_score": 49.2
+  },
+  {
+    "name": "Daniel Kahneman",
+    "image": "./informatici_cards/Daniel_Kahneman__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 50,
+      "riconoscimento_professionale": 53,
+      "lunghezza_della_barba": 50,
+      "openess": 48
+    },
+    "avg_score": 50.2
+  },
+  {
+    "name": "David Evans",
+    "image": "./informatici_cards/David_Evans__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 48,
+      "uso_di_tecnologie_avanzate": 50,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 49.4
+  },
+  {
+    "name": "Dennis Ritchie",
+    "image": "./informatici_cards/Dennis_Ritchie__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Donald Knuth",
+    "image": "./informatici_cards/Donald_Knuth__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Edsger Dijkstra",
+    "image": "./informatici_cards/Edsger_Dijkstra__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Elizabeth Feinler",
+    "image": "./informatici_cards/Elizabeth_Feinler__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Grace Hopper",
+    "image": "./informatici_cards/Grace_Hopper__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Guido van Rossum",
+    "image": "./informatici_cards/Guido_van_Rossum__software_engineer.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 50,
+      "riconoscimento_professionale": 49,
+      "lunghezza_della_barba": 51,
+      "openess": 50
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Ivan Sutherland",
+    "image": "./informatici_cards/Ivan_Sutherland__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "James Gosling",
+    "image": "./informatici_cards/James_Gosling__software_engineer.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 52,
+      "openess": 49
+    },
+    "avg_score": 50.4
+  },
+  {
+    "name": "John McCarthy",
+    "image": "./informatici_cards/John_McCarthy__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 49,
+      "riconoscimento_professionale": 49,
+      "lunghezza_della_barba": 51,
+      "openess": 50
+    },
+    "avg_score": 49.8
+  },
+  {
+    "name": "John von Neumann",
+    "image": "./informatici_cards/John_von_Neumann__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "John von Neumann",
+    "image": "./informatici_cards/John_von_Neumann__mathematician_computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 50,
+      "riconoscimento_professionale": 49,
+      "lunghezza_della_barba": 49,
+      "openess": 50
+    },
+    "avg_score": 49.6
+  },
+  {
+    "name": "Kathleen Booth",
+    "image": "./informatici_cards/Kathleen_Booth__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Ken Thompson",
+    "image": "./informatici_cards/Ken_Thompson__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Leonardo Torres Quevedo",
+    "image": "./informatici_cards/Leonardo_Torres_Quevedo__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Linus Torvalds",
+    "image": "./informatici_cards/Linus_Torvalds__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Linus Torvalds",
+    "image": "./informatici_cards/Linus_Torvalds__software_engineer.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 50,
+      "riconoscimento_professionale": 49,
+      "lunghezza_della_barba": 51,
+      "openess": 50
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Margaret Hamilton",
+    "image": "./informatici_cards/Margaret_Hamilton__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Margaret Hamilton",
+    "image": "./informatici_cards/Margaret_Hamilton__software_engineer.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 50,
+      "riconoscimento_professionale": 49,
+      "lunghezza_della_barba": 51,
+      "openess": 50
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Martin Hellman",
+    "image": "./informatici_cards/Martin_Hellman__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Robert Metcalfe",
+    "image": "./informatici_cards/Robert_Metcalfe__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Shafi Goldwasser",
+    "image": "./informatici_cards/Shafi_Goldwasser__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Susan Wojcicki",
+    "image": "./informatici_cards/Susan_Wojcicki__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Tim Berners-Lee",
+    "image": "./informatici_cards/Tim_Berners-Lee__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Vint Cerf",
+    "image": "./informatici_cards/Vint_Cerf__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  },
+  {
+    "name": "Yukihiro Matsumoto",
+    "image": "./informatici_cards/Yukihiro_Matsumoto__computer_scientist.jpeg",
+    "scores": {
+      "influenza_sul_mercato": 50,
+      "uso_di_tecnologie_avanzate": 51,
+      "riconoscimento_professionale": 50,
+      "lunghezza_della_barba": 50,
+      "openess": 49
+    },
+    "avg_score": 50.0
+  }
+]

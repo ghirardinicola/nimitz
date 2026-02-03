@@ -1,0 +1,45 @@
+{
+  "name": "computer_scientists",
+  "description": "Vocabolario per carte di informatici famosi",
+  "characteristics": {
+    "era_storica": [
+      "pioniere dell'informatica anni 40-50",
+      "fondatore dei linguaggi di programmazione anni 60-70",
+      "rivoluzione personal computer anni 80-90",
+      "era moderna open source e cloud computing"
+    ],
+    "contributo_principale": [
+      "teoria computazionale e matematica",
+      "sistemi operativi e kernel",
+      "linguaggi di programmazione",
+      "intelligenza artificiale e machine learning",
+      "architettura hardware e computer",
+      "reti e protocolli internet",
+      "algoritmi e strutture dati"
+    ],
+    "impatto_industria": [
+      "rivoluzionario cambio di paradigma",
+      "fondamentale per lo sviluppo del settore",
+      "significativo miglioramento tecnologico",
+      "influenza specifica su un dominio"
+    ],
+    "legacy": [
+      "strumenti usati quotidianamente da milioni",
+      "fondamenta teoriche dell'informatica",
+      "standard industriali e best practices",
+      "ispirazione per future generazioni"
+    ],
+    "approccio_tecnico": [
+      "eleganza e semplicità nel design",
+      "robustezza e affidabilità",
+      "innovazione radicale e visionaria",
+      "pragmatismo e praticità"
+    ],
+    "riconoscimenti": [
+      "Turing Award e premi internazionali",
+      "riconoscimento accademico e pubblicazioni",
+      "successo commerciale e industriale",
+      "culto nella comunità developer"
+    ]
+  }
+}

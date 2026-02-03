@@ -1,0 +1,58 @@
+{
+  "characteristics": {
+    "influenza_tecnologica": [
+      "programmatore di software per calcolatori scientifici degli anni '60",
+      "sviluppatore di applicazioni desktop popolari negli anni '80",
+      "creatore di linguaggi di programmazione influenti negli anni '90",
+      "pioniere dell'architettura software moderna negli anni 2000",
+      "visionario che ha rivoluzionato il web e i dispositivi mobili"
+    ],
+    "complessita_tecnica": [
+      "programma semplice per calcolatrice da tavolo",
+      "software di base per computer domestici",
+      "sistema operativo con funzionalità avanzate",
+      "piattaforma di sviluppo per applicazioni enterprise",
+      "architettura distribuita per servizi cloud su larga scala"
+    ],
+    "riconoscimento_leggenda": [
+      "programmatore poco conosciuto nel settore informatico",
+      "esperto rispettato in un campo specifico",
+      "giornalista tecnico con base di lettori",
+      "personaggio famoso nei circuiti informatici",
+      "icona mondiale della tecnologia e dell'innovazione"
+    ],
+    "innovazione_paradigma": [
+      "programmatore che ha scritto codice standardizzato",
+      "sviluppatore di metodi di programmazione tradizionali",
+      "creatore di nuovi paradigmi di programmazione",
+      "pioniere di architetture software innovative",
+      "rivoluzionario che ha cambiato completamente il modo di programmare"
+    ],
+    "impatto_storico": [
+      "contributore modesto a progetti informatici locali",
+      "sviluppatore di software utilizzato da poche persone",
+      "creatore di strumenti utilizzati da una comunità",
+      "programmatore che ha influenzato un'intera industria",
+      "visionario che ha plasmato l'intero settore informatico"
+    ],
+    "abilita_tecnica": [
+      "programmatore con conoscenze base di programmazione",
+      "sviluppatore esperto in linguaggi specifici",
+      "ingegnere software con competenze avanzate",
+      "architetto software con esperienza multi-piattaforma",
+      "genio informatico con abilità eccezionali in ogni ambito"
+    ],
+    "influenza_attuale": [
+      "programmatore con scarsa presenza online",
+      "sviluppatore con base di utenti limitata",
+      "creatori di librerie utilizzate da molti sviluppatori",
+      "pioniere con grande impatto sulle tecnologie moderne",
+      "leader tecnologico con influenza globale e continua"
+    ]
+  },
+  "metadata": {
+    "created_by": "NIMITZ Vocabulary Wizard",
+    "total_characteristics": 7,
+    "total_prompts": 35
+  }
+}

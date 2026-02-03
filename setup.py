@@ -10,17 +10,18 @@ from pathlib import Path
 requirements = []
 req_file = Path(__file__).parent / "requirements.txt"
 if req_file.exists():
-    with open(req_file, 'r') as f:
+    with open(req_file, "r") as f:
         for line in f:
             line = line.strip()
-            if line and not line.startswith('#'):
+            # Skip git URLs and comments
+            if line and not line.startswith("#") and not line.startswith("git+"):
                 requirements.append(line)
 
 # Read README for long description
 readme_file = Path(__file__).parent / "README.md"
 long_description = ""
 if readme_file.exists():
-    with open(readme_file, 'r', encoding='utf-8') as f:
+    with open(readme_file, "r", encoding="utf-8") as f:
         long_description = f.read()
 
 setup(
@@ -33,15 +34,7 @@ setup(
     python_requires=">=3.8",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
-    py_modules=[
-        "cli",
-        "core",
-        "embed",
-        "cluster",
-        "viz",
-        "image_card",
-        "main"
-    ],
+    py_modules=["cli", "core", "embed", "cluster", "viz", "image_card", "main"],
     install_requires=requirements,
     entry_points={
         "console_scripts": [

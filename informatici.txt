@@ -1,0 +1,22 @@
+Ada Lovelace, computer scientist
+Alan Turing, computer scientist
+Andrei Alexandrescu, computer scientist
+Barbara Liskov, computer scientist
+Daniel Kahneman, computer scientist
+David Evans, computer scientist
+Donald Knuth, computer scientist
+Elizabeth Feinler, computer scientist
+Grace Hopper, computer scientist
+Ivan Sutherland, computer scientist
+John McCarthy, computer scientist
+John von Neumann, computer scientist
+Leonardo Torres Quevedo, computer scientist
+Linus Torvalds, computer scientist
+Margaret Hamilton, computer scientist
+Martin Hellman, computer scientist
+Robert Metcalfe, computer scientist
+Shafi Goldwasser, computer scientist
+Susan Wojcicki, computer scientist
+Tim Berners-Lee, computer scientist
+Vint Cerf, computer scientist
+Yukihiro Matsumoto, computer scientist

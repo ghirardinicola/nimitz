@@ -12,8 +12,13 @@ import json
 
 # Try to import CLIP-related modules for image suggestions
 try:
-    from embed import initialize_clip_model, extract_image_features, extract_text_features
+    from embed import (
+        initialize_clip_model,
+        extract_image_features,
+        extract_text_features,
+    )
     from core import load_images, validate_characteristics
+
     CLIP_AVAILABLE = True
 except ImportError:
     CLIP_AVAILABLE = False
@@ -25,9 +30,22 @@ except ImportError:
 
 # Common patterns that indicate prompts that are too generic
 GENERIC_PATTERNS = [
-    "good", "bad", "nice", "pretty", "ugly", "beautiful",
-    "interesting", "boring", "cool", "amazing", "great",
-    "image", "photo", "picture", "thing", "stuff"
+    "good",
+    "bad",
+    "nice",
+    "pretty",
+    "ugly",
+    "beautiful",
+    "interesting",
+    "boring",
+    "cool",
+    "amazing",
+    "great",
+    "image",
+    "photo",
+    "picture",
+    "thing",
+    "stuff",
 ]
 
 # Minimum recommended prompt length
@@ -53,22 +71,33 @@ def validate_prompt(prompt: str) -> Tuple[bool, str]:
 
     # Check length
     if len(prompt) < MIN_PROMPT_LENGTH:
-        return False, f"Prompt troppo corto ({len(prompt)} caratteri). Aggiungi piu dettagli per aiutare CLIP a identificare questa caratteristica."
+        return (
+            False,
+            f"Prompt troppo corto ({len(prompt)} caratteri). Aggiungi piu dettagli per aiutare CLIP a identificare questa caratteristica.",
+        )
 
     # Check for overly generic words
     prompt_lower = prompt.lower()
     generic_found = [word for word in GENERIC_PATTERNS if word in prompt_lower.split()]
     if generic_found and len(prompt.split()) <= 3:
-        return False, f"Prompt troppo generico. Parole come '{', '.join(generic_found)}' sono vaghe. Descrivi specificamente cosa stai cercando."
+        return (
+            False,
+            f"Prompt troppo generico. Parole come '{', '.join(generic_found)}' sono vaghe. Descrivi specificamente cosa stai cercando.",
+        )
 
     # Check for single word
     if len(prompt.split()) == 1:
-        return False, "Prompt di una sola parola. CLIP funziona meglio con descrizioni complete come 'paesaggio montano innevato' invece di 'montagna'."
+        return (
+            False,
+            "Prompt di una sola parola. CLIP funziona meglio con descrizioni complete come 'paesaggio montano innevato' invece di 'montagna'.",
+        )
 
     return True, "OK"
 
 
-def validate_characteristic_name(name: str, existing_names: List[str]) -> Tuple[bool, str]:
+def validate_characteristic_name(
+    name: str, existing_names: List[str]
+) -> Tuple[bool, str]:
     """
     Validate a characteristic name.
 
@@ -87,7 +116,7 @@ def validate_characteristic_name(name: str, existing_names: List[str]) -> Tuple[
         return False, "Nome troppo lungo. Usa massimo 30 caratteri."
 
     # Check for invalid characters
-    if not all(c.isalnum() or c in '_- ' for c in name):
+    if not all(c.isalnum() or c in "_- " for c in name):
         return False, "Usa solo lettere, numeri, spazi, trattini e underscore."
 
     return True, "OK"
@@ -102,9 +131,9 @@ def analyze_prompt_quality(prompts: List[str]) -> Dict[str, Any]:
     """
     if not prompts:
         return {
-            'score': 0,
-            'issues': ['Nessun prompt definito'],
-            'suggestions': ['Aggiungi almeno 2 prompt per questa caratteristica']
+            "score": 0,
+            "issues": ["Nessun prompt definito"],
+            "suggestions": ["Aggiungi almeno 2 prompt per questa caratteristica"],
         }
 
     issues = []
@@ -112,11 +141,15 @@ def analyze_prompt_quality(prompts: List[str]) -> Dict[str, Any]:
 
     # Check number of prompts
     if len(prompts) < MIN_PROMPTS_PER_CHAR:
-        issues.append(f"Solo {len(prompts)} prompt. Consigliati almeno {MIN_PROMPTS_PER_CHAR}.")
+        issues.append(
+            f"Solo {len(prompts)} prompt. Consigliati almeno {MIN_PROMPTS_PER_CHAR}."
+        )
         suggestions.append("Aggiungi piu varianti per una migliore analisi.")
     elif len(prompts) > MAX_PROMPTS_PER_CHAR:
         issues.append(f"Troppi prompt ({len(prompts)}). Potrebbe rallentare l'analisi.")
-        suggestions.append(f"Considera di ridurre a massimo {MAX_PROMPTS_PER_CHAR} prompt.")
+        suggestions.append(
+            f"Considera di ridurre a massimo {MAX_PROMPTS_PER_CHAR} prompt."
+        )
 
     # Check prompt variety
     avg_length = sum(len(p) for p in prompts) / len(prompts)
@@ -127,11 +160,11 @@ def analyze_prompt_quality(prompts: List[str]) -> Dict[str, Any]:
     # Check for too similar prompts
     prompt_words = [set(p.lower().split()) for p in prompts]
     for i, words1 in enumerate(prompt_words):
-        for j, words2 in enumerate(prompt_words[i+1:], i+1):
+        for j, words2 in enumerate(prompt_words[i + 1 :], i + 1):
             overlap = len(words1 & words2)
             total = len(words1 | words2)
             if total > 0 and overlap / total > 0.7:
-                issues.append(f"Prompt {i+1} e {j+1} sono molto simili.")
+                issues.append(f"Prompt {i + 1} e {j + 1} sono molto simili.")
                 suggestions.append("Differenzia i prompt per coprire piu varianti.")
                 break
 
@@ -141,11 +174,11 @@ def analyze_prompt_quality(prompts: List[str]) -> Dict[str, Any]:
     score = max(0, min(100, score))
 
     return {
-        'score': score,
-        'issues': issues,
-        'suggestions': suggestions,
-        'count': len(prompts),
-        'avg_length': avg_length
+        "score": score,
+        "issues": issues,
+        "suggestions": suggestions,
+        "count": len(prompts),
+        "avg_length": avg_length,
     }
 
 
@@ -153,9 +186,9 @@ def analyze_prompt_quality(prompts: List[str]) -> Dict[str, Any]:
 # IMAGE-BASED SUGGESTIONS
 # =============================================================================
 
+
 def suggest_from_images(
-    image_directory: str,
-    max_suggestions: int = 6
+    image_directory: str, max_suggestions: int = 6
 ) -> Dict[str, List[str]]:
     """
     Analyze sample images and suggest relevant characteristics.
@@ -173,7 +206,7 @@ def suggest_from_images(
             return _get_fallback_suggestions()
 
         # Limit analysis to sample of images
-        sample_paths = image_paths[:min(10, len(image_paths))]
+        sample_paths = image_paths[: min(10, len(image_paths))]
 
         print(f"\n  Analizzo {len(sample_paths)} immagini di esempio...")
 
@@ -199,8 +232,11 @@ def suggest_from_images(
 
             # Compute similarity
             import torch
+
             with torch.no_grad():
-                similarities = (image_features @ text_features[category].T).cpu().numpy()
+                similarities = (
+                    (image_features @ text_features[category].T).cpu().numpy()
+                )
 
             # Get average max similarity
             max_sims = similarities.max(axis=1)
@@ -222,108 +258,210 @@ def suggest_from_images(
 def _get_probe_vocabulary() -> Dict[str, List[str]]:
     """Probing vocabulary to detect image content types"""
     return {
-        'content_type': [
+        "content_type": [
             "photograph of a person",
             "photograph of nature landscape",
             "photograph of architecture building",
             "photograph of food",
             "photograph of product object",
             "artwork painting illustration",
-            "abstract art or pattern"
+            "abstract art or pattern",
         ],
-        'style_type': [
+        "style_type": [
             "professional photography",
             "amateur snapshot",
             "artistic creative image",
             "commercial product shot",
-            "documentary photo"
+            "documentary photo",
         ],
-        'color_mood': [
+        "color_mood": [
             "bright colorful vibrant",
             "dark moody atmosphere",
             "black and white monochrome",
             "soft pastel colors",
-            "high contrast dramatic"
-        ]
+            "high contrast dramatic",
+        ],
     }
 
 
-def _generate_suggestions_from_detections(detections: Dict[str, float]) -> Dict[str, List[str]]:
+def _generate_suggestions_from_detections(
+    detections: Dict[str, float],
+) -> Dict[str, List[str]]:
     """Generate vocabulary suggestions based on detected content"""
     suggestions = {}
 
     # Always suggest some basics
-    suggestions['qualita_generale'] = [
+    suggestions["qualita_generale"] = [
         "immagine ad alta risoluzione nitida",
         "immagine di media qualita",
-        "immagine sfocata o di bassa qualita"
+        "immagine sfocata o di bassa qualita",
     ]
 
     # Add mood if relevant
-    if detections.get('color_mood', 0) > 0.15:
-        suggestions['atmosfera'] = [
+    if detections.get("color_mood", 0) > 0.15:
+        suggestions["atmosfera"] = [
             "atmosfera luminosa e allegra",
             "atmosfera scura e misteriosa",
             "atmosfera calma e serena",
-            "atmosfera drammatica e intensa"
+            "atmosfera drammatica e intensa",
         ]
 
     # Add composition
-    suggestions['composizione'] = [
+    suggestions["composizione"] = [
         "composizione centrata simmetrica",
         "composizione con regola dei terzi",
         "composizione dinamica diagonale",
-        "composizione minimalista"
+        "composizione minimalista",
     ]
 
     # Content-specific suggestions
-    if 'person' in str(detections).lower() or detections.get('content_type', 0) > 0.2:
-        suggestions['soggetto'] = [
+    if "person" in str(detections).lower() or detections.get("content_type", 0) > 0.2:
+        suggestions["soggetto"] = [
             "ritratto di persona",
             "gruppo di persone",
             "paesaggio naturale",
             "scena urbana",
-            "oggetto in primo piano"
+            "oggetto in primo piano",
         ]
 
     return suggestions
 
 
+def _get_llm_suggestions(context: str) -> Optional[Dict[str, List[str]]]:
+    """
+    Generate vocabulary suggestions using LLM based on semantic context.
+
+    Args:
+        context: Description of what kind of content will be analyzed
+                (e.g., "famous computer scientists", "baseball players", etc.)
+
+    Returns:
+        Dictionary of characteristics and prompts, or None if LLM unavailable
+    """
+    try:
+        from llm_analyzer import get_llm_config, call_llm
+
+        # Check if LLM is available
+        try:
+            config = get_llm_config("auto")
+        except ValueError:
+            return None
+
+        prompt = f"""You are helping create a QUANTITATIVE vocabulary for analyzing images of {context}.
+
+This vocabulary will be used to create TRADING CARDS / TOP TRUMPS style game cards with numeric stats that can be compared and battled.
+
+IMPORTANT: Create characteristics that represent QUANTIFIABLE attributes on a scale (like power, speed, rarity in trading card games).
+
+For example, for "famous race cars":
+- Characteristic: "velocita_massima" (Maximum Speed)
+  Prompts in INCREASING order:
+  ["slow vintage car from 1950s", "moderate speed sports car", "fast racing car with aerodynamic design", "extremely fast Formula 1 race car breaking speed records"]
+
+- Characteristic: "potenza_motore" (Engine Power)  
+  Prompts in INCREASING order:
+  ["weak small engine", "standard engine", "powerful turbocharged engine", "extreme high-performance racing engine"]
+
+Now create a quantitative vocabulary for: {context}
+
+Generate 5-7 characteristics that are QUANTIFIABLE and COMPARABLE (perfect for card battles/comparisons).
+
+For each characteristic:
+1. Name it clearly (what you're measuring)
+2. Provide 4-7 prompts in INCREASING ORDER from lowest to highest value
+3. Make prompts VISUAL so CLIP can detect them in images
+4. Think like a card game designer - what stats would make interesting comparisons?
+
+Examples of good quantifiable characteristics:
+- Historical Impact (low to revolutionary)
+- Technical Complexity (simple to extremely advanced)  
+- Current Influence (forgotten to widely used today)
+- Innovation Level (incremental to paradigm-shifting)
+- Recognition/Fame (obscure to legendary)
+
+Return ONLY valid JSON in this exact format:
+{{
+  "characteristic_name": [
+    "lowest value prompt (visually detectable)",
+    "low-medium value prompt",
+    "medium value prompt",
+    "medium-high value prompt",
+    "highest value prompt (visually detectable)"
+  ]
+}}
+
+Remember: Prompts must be VISUAL descriptions that CLIP can see in images, ordered from LOW to HIGH."""
+
+        response = call_llm(config=config, prompt=prompt)
+
+        # Parse JSON from response
+        import re
+
+        # Extract JSON from markdown code blocks if present
+        json_match = re.search(r"```(?:json)?\s*(\{.*\})\s*```", response, re.DOTALL)
+        if json_match:
+            json_str = json_match.group(1)
+        else:
+            # Try to find JSON object in response
+            json_match = re.search(r"\{.*\}", response, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(0)
+            else:
+                return None
+
+        vocabulary = json.loads(json_str)
+
+        # Validate structure
+        if not isinstance(vocabulary, dict):
+            return None
+
+        for char_name, prompts in vocabulary.items():
+            if not isinstance(prompts, list) or len(prompts) < 2:
+                return None
+
+        return vocabulary
+
+    except Exception as e:
+        print(f"  Errore nella generazione LLM: {e}")
+        return None
+
+
 def _get_fallback_suggestions() -> Dict[str, List[str]]:
     """Fallback suggestions when image analysis is not available"""
     return {
-        'soggetto': [
+        "soggetto": [
             "ritratto di persona",
             "paesaggio naturale",
             "architettura urbana",
             "oggetto in primo piano",
-            "scena di gruppo"
+            "scena di gruppo",
         ],
-        'stile': [
+        "stile": [
             "fotografia professionale",
             "scatto amatoriale spontaneo",
             "stile artistico elaborato",
-            "documentario realistico"
+            "documentario realistico",
         ],
-        'atmosfera': [
+        "atmosfera": [
             "atmosfera luminosa allegra",
             "atmosfera scura drammatica",
             "atmosfera calma serena",
-            "atmosfera energetica dinamica"
+            "atmosfera energetica dinamica",
         ],
-        'colori': [
+        "colori": [
             "colori vivaci e saturi",
             "toni pastello delicati",
             "bianco e nero",
             "palette calda (rossi, aranci)",
-            "palette fredda (blu, verdi)"
-        ]
+            "palette fredda (blu, verdi)",
+        ],
     }
 
 
 # =============================================================================
 # INTERACTIVE WIZARD
 # =============================================================================
+
 
 class VocabularyWizard:
     """Interactive wizard for creating custom vocabularies"""
@@ -337,9 +475,13 @@ class VocabularyWizard:
         """Run the interactive wizard"""
         self._print_header()
 
-        # Step 1: Image-based suggestions
+        # Step 1: Offer suggestions
         if self.image_directory:
+            # Image-based suggestions (CLIP)
             self._offer_suggestions()
+        else:
+            # Semantic suggestions (LLM) when no images
+            self._offer_semantic_suggestions()
 
         # Step 2: Main editing loop
         self._main_loop()
@@ -383,13 +525,157 @@ class VocabularyWizard:
                 print(f"    - {prompt}")
 
         print("\n" + "-" * 50)
-        response = input("\nVuoi usare questi suggerimenti come base? [S/n]: ").strip().lower()
+        response = (
+            input("\nVuoi usare questi suggerimenti come base? [S/n]: ").strip().lower()
+        )
 
-        if response != 'n':
+        if response != "n":
             self.characteristics = suggestions.copy()
             print(" Suggerimenti aggiunti! Puoi modificarli o aggiungerne altri.\n")
         else:
             print(" OK, partiamo da zero.\n")
+
+    def _offer_semantic_suggestions(self):
+        """Offer suggestions based on semantic context using LLM with iterative refinement"""
+        print("\n Nessuna directory di immagini specificata.")
+        print(" Posso comunque aiutarti a creare un vocabolario!")
+        print()
+
+        # Step 1: Get initial context
+        context = input(
+            "Che tipo di contenuto vuoi analizzare? (es: 'informatici famosi', 'giocatori di baseball', 'opere d'arte'): "
+        ).strip()
+
+        if not context:
+            print(" OK, partiamo da zero.\n")
+            return
+
+        # Step 2: Iterative refinement loop
+        iteration = 1
+        suggestions = None
+        feedback = ""
+
+        while True:
+            print(f"\n{'=' * 60}")
+            print(f"  ITERAZIONE {iteration}: Generazione vocabolario")
+            print(f"{'=' * 60}")
+
+            if iteration == 1:
+                # First iteration - generate from context
+                print(f"\n🤖 Genero suggerimenti per: '{context}'...")
+                suggestions = _get_llm_suggestions(context)
+            else:
+                # Subsequent iterations - refine based on feedback
+                print(f"\n🤖 Rigenero suggerimenti con i tuoi feedback...")
+                refinement_prompt = self._build_refinement_context(
+                    context, suggestions, feedback
+                )
+                suggestions = _get_llm_suggestions(refinement_prompt)
+
+            if not suggestions:
+                print("  Non sono riuscito a generare suggerimenti con LLM.")
+                print("  Probabilmente nessun LLM è configurato.")
+                print("  Puoi comunque creare il vocabolario manualmente!\n")
+                return
+
+            # Show generated suggestions
+            self._display_suggestions(suggestions, iteration)
+
+            # Ask for feedback
+            print(f"\n{'=' * 60}")
+            print("  Opzioni:")
+            print("  1. Accetta questi suggerimenti")
+            print("  2. Migliora/raffina i suggerimenti (iterazione successiva)")
+            print("  3. Riparti da zero con nuovo contesto")
+            print("  4. Salta suggerimenti automatici")
+            print(f"{'=' * 60}")
+
+            choice = input("\nScelta [1-4]: ").strip()
+
+            if choice == "1":
+                # Accept suggestions
+                self.characteristics = suggestions.copy()
+                print(
+                    " ✅ Suggerimenti aggiunti! Puoi modificarli o aggiungerne altri.\n"
+                )
+                break
+
+            elif choice == "2":
+                # Iterative refinement
+                print("\n📝 Feedback per il miglioramento:")
+                print("   Descrivi cosa vorresti cambiare, aggiungere o rimuovere.")
+                print("   (Es: 'aggiungi caratteristiche sul background educativo',")
+                print(
+                    "        'rimuovi physical_appearance', 'fai prompt più specifici')"
+                )
+                print()
+                feedback = input("Feedback: ").strip()
+
+                if not feedback:
+                    print(
+                        " ⚠️  Nessun feedback fornito. Riprovo con lo stesso contesto..."
+                    )
+                    feedback = "genera variazioni più creative e specifiche"
+
+                iteration += 1
+                continue
+
+            elif choice == "3":
+                # Restart with new context
+                context = input("\nNuovo contesto: ").strip()
+                if not context:
+                    print(" OK, partiamo da zero.\n")
+                    return
+                iteration = 1
+                suggestions = None
+                continue
+
+            elif choice == "4":
+                # Skip automated suggestions
+                print(" OK, partiamo da zero.\n")
+                return
+
+            else:
+                print(f" ⚠️  Scelta non valida: '{choice}'. Riprova.")
+                continue
+
+    def _display_suggestions(self, suggestions: Dict[str, List[str]], iteration: int):
+        """Display generated suggestions in a readable format"""
+        print(f"\n 💡 Suggerimenti (Iterazione {iteration}):")
+        print("-" * 50)
+
+        total_prompts = sum(len(prompts) for prompts in suggestions.values())
+
+        for char_name, prompts in suggestions.items():
+            print(
+                f"\n  📊 {char_name.upper().replace('_', ' ')} ({len(prompts)} prompt):"
+            )
+            for i, prompt in enumerate(prompts, 1):
+                print(f"     {i}. {prompt}")
+
+        print(f"\n{'=' * 50}")
+        print(f"  Totale: {len(suggestions)} caratteristiche, {total_prompts} prompt")
+        print(f"{'=' * 50}")
+
+    def _build_refinement_context(
+        self,
+        original_context: str,
+        previous_suggestions: Dict[str, List[str]],
+        feedback: str,
+    ) -> str:
+        """Build context for refinement iteration"""
+        # Summarize previous suggestions
+        char_names = list(previous_suggestions.keys())
+
+        refinement = f"""Context: {original_context}
+
+Previous characteristics generated: {", ".join(char_names)}
+
+User feedback: {feedback}
+
+Based on this feedback, generate an improved vocabulary that addresses the user's requests while maintaining relevance to '{original_context}'."""
+
+        return refinement
 
     def _main_loop(self):
         """Main interaction loop"""
@@ -397,37 +683,43 @@ class VocabularyWizard:
             print("\n" + "-" * 50)
 
             if self.characteristics:
-                print(f"Vocabolario corrente: {len(self.characteristics)} caratteristiche")
+                print(
+                    f"Vocabolario corrente: {len(self.characteristics)} caratteristiche"
+                )
 
-            action = input("\nCosa vuoi fare? [nuova/modifica/show/test/done]: ").strip().lower()
+            action = (
+                input("\nCosa vuoi fare? [nuova/modifica/show/test/done]: ")
+                .strip()
+                .lower()
+            )
 
-            if action == 'done' or action == 'fine':
+            if action == "done" or action == "fine":
                 if not self.characteristics:
                     print(" Attenzione: vocabolario vuoto!")
                     confirm = input("Vuoi uscire comunque? [s/N]: ").strip().lower()
-                    if confirm != 's':
+                    if confirm != "s":
                         continue
                 break
 
-            elif action == 'help' or action == 'aiuto':
+            elif action == "help" or action == "aiuto":
                 self._show_help()
 
-            elif action == 'show' or action == 'mostra':
+            elif action == "show" or action == "mostra":
                 self._show_current()
 
-            elif action == 'nuova' or action == 'new' or action == 'n':
+            elif action == "nuova" or action == "new" or action == "n":
                 self._add_characteristic()
 
-            elif action == 'modifica' or action == 'edit' or action == 'm':
+            elif action == "modifica" or action == "edit" or action == "m":
                 self._edit_characteristic()
 
-            elif action == 'delete' or action == 'elimina' or action == 'd':
+            elif action == "delete" or action == "elimina" or action == "d":
                 self._delete_characteristic()
 
-            elif action == 'test' or action == 't':
+            elif action == "test" or action == "t":
                 self._test_vocabulary()
 
-            elif action == '':
+            elif action == "":
                 # Empty input - add new characteristic
                 self._add_characteristic()
 
@@ -477,14 +769,16 @@ COMANDI:
 
         for char_name, prompts in self.characteristics.items():
             quality = analyze_prompt_quality(prompts)
-            quality_indicator = "" if quality['score'] >= 70 else ""
+            quality_indicator = "" if quality["score"] >= 70 else ""
 
             print(f"\n {quality_indicator} {char_name.upper()} ({len(prompts)} prompt)")
             for i, prompt in enumerate(prompts, 1):
                 print(f"    {i}. {prompt}")
 
-            if quality['issues']:
-                print(f"    Suggerimenti: {quality['suggestions'][0] if quality['suggestions'] else ''}")
+            if quality["issues"]:
+                print(
+                    f"    Suggerimenti: {quality['suggestions'][0] if quality['suggestions'] else ''}"
+                )
 
     def _add_characteristic(self):
         """Add a new characteristic"""
@@ -495,11 +789,13 @@ COMANDI:
         while True:
             name = input("Nome caratteristica (es: 'stile', 'atmosfera'): ").strip()
 
-            if name.lower() in ['done', 'fine', 'cancel', 'annulla']:
+            if name.lower() in ["done", "fine", "cancel", "annulla"]:
                 print("Aggiunta annullata.")
                 return
 
-            valid, message = validate_characteristic_name(name, list(self.characteristics.keys()))
+            valid, message = validate_characteristic_name(
+                name, list(self.characteristics.keys())
+            )
             if valid:
                 break
             print(f" {message}")
@@ -524,7 +820,7 @@ COMANDI:
             if not valid:
                 print(f"     {message}")
                 retry = input("    Vuoi riprovare? [S/n]: ").strip().lower()
-                if retry == 'n':
+                if retry == "n":
                     continue
                 continue
 
@@ -535,14 +831,14 @@ COMANDI:
         quality = analyze_prompt_quality(prompts)
         print(f"\n Qualita prompt: {quality['score']}/100")
 
-        if quality['issues']:
+        if quality["issues"]:
             print("  Problemi rilevati:")
-            for issue in quality['issues']:
+            for issue in quality["issues"]:
                 print(f"    - {issue}")
 
-        if quality['score'] < 70:
+        if quality["score"] < 70:
             improve = input("\nVuoi migliorare i prompt? [s/N]: ").strip().lower()
-            if improve == 's':
+            if improve == "s":
                 prompts = self._improve_prompts(name, prompts)
 
         self.characteristics[name] = prompts
@@ -566,10 +862,10 @@ COMANDI:
 
             action = input("> ").strip().lower()
 
-            if action == 'done' or action == 'fine':
+            if action == "done" or action == "fine":
                 break
 
-            elif action == 'add' or action == 'aggiungi':
+            elif action == "add" or action == "aggiungi":
                 new_prompt = input("Nuovo prompt: ").strip()
                 valid, msg = validate_prompt(new_prompt)
                 if valid:
@@ -578,7 +874,7 @@ COMANDI:
                 else:
                     print(f" {msg}")
 
-            elif action.startswith('del '):
+            elif action.startswith("del "):
                 try:
                     idx = int(action.split()[1]) - 1
                     if 0 <= idx < len(prompts):
@@ -630,8 +926,7 @@ COMANDI:
 
         if target:
             self.characteristics[target] = self._improve_prompts(
-                target,
-                self.characteristics[target]
+                target, self.characteristics[target]
             )
         else:
             print(" Caratteristica non trovata.")
@@ -658,8 +953,10 @@ COMANDI:
             target = choice
 
         if target:
-            confirm = input(f"Confermi eliminazione di '{target}'? [s/N]: ").strip().lower()
-            if confirm == 's':
+            confirm = (
+                input(f"Confermi eliminazione di '{target}'? [s/N]: ").strip().lower()
+            )
+            if confirm == "s":
                 del self.characteristics[target]
                 print(f" '{target}' eliminata.")
         else:
@@ -692,19 +989,21 @@ COMANDI:
                 characteristics=self.characteristics,
                 visualize=False,
                 save_plots=False,
-                output_dir="/tmp/nimitz_test"
+                output_dir="/tmp/nimitz_test",
             )
 
             print("\n TEST COMPLETATO")
             print(f"  Immagini analizzate: {len(results['image_paths'])}")
 
             # Show sample results
-            if results.get('image_cards_data'):
+            if results.get("image_cards_data"):
                 print("\n  Esempio risultato:")
-                card = results['image_cards_data'][0]
+                card = results["image_cards_data"][0]
                 print(f"    Immagine: {card.get('image_name', 'N/A')}")
-                for feat in card.get('dominant_features', [])[:3]:
-                    print(f"    - {feat['characteristic']}: {feat['prompt']} ({feat['score']:.2f})")
+                for feat in card.get("dominant_features", [])[:3]:
+                    print(
+                        f"    - {feat['characteristic']}: {feat['prompt']} ({feat['score']:.2f})"
+                    )
 
         except Exception as e:
             print(f" Errore nel test: {e}")
@@ -729,8 +1028,10 @@ COMANDI:
         all_issues = []
         for name, prompts in self.characteristics.items():
             quality = analyze_prompt_quality(prompts)
-            if quality['score'] < 70:
-                all_issues.append(f"'{name}': {quality['issues'][0] if quality['issues'] else 'qualita bassa'}")
+            if quality["score"] < 70:
+                all_issues.append(
+                    f"'{name}': {quality['issues'][0] if quality['issues'] else 'qualita bassa'}"
+                )
 
         if all_issues:
             print(f"\n Suggerimenti per migliorare:")
@@ -738,7 +1039,9 @@ COMANDI:
                 print(f"   - {issue}")
 
         # Offer to save
-        save_path = input("\nSalva vocabolario su file? [percorso o invio per saltare]: ").strip()
+        save_path = input(
+            "\nSalva vocabolario su file? [percorso o invio per saltare]: "
+        ).strip()
         if save_path:
             try:
                 self._save_vocabulary(save_path)
@@ -755,17 +1058,18 @@ COMANDI:
             "metadata": {
                 "created_by": "NIMITZ Vocabulary Wizard",
                 "total_characteristics": len(self.characteristics),
-                "total_prompts": sum(len(p) for p in self.characteristics.values())
-            }
+                "total_prompts": sum(len(p) for p in self.characteristics.values()),
+            },
         }
 
-        with open(path, 'w', encoding='utf-8') as f:
+        with open(path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
 
 
 # =============================================================================
 # CLI ENTRY POINTS
 # =============================================================================
+
 
 def run_wizard(image_directory: Optional[str] = None) -> Dict[str, List[str]]:
     """
@@ -792,28 +1096,32 @@ def quick_validate(characteristics: Dict[str, List[str]]) -> Dict[str, Any]:
         Validation report
     """
     report = {
-        'valid': True,
-        'total_characteristics': len(characteristics),
-        'total_prompts': 0,
-        'issues': [],
-        'characteristic_quality': {}
+        "valid": True,
+        "total_characteristics": len(characteristics),
+        "total_prompts": 0,
+        "issues": [],
+        "characteristic_quality": {},
     }
 
     for name, prompts in characteristics.items():
         quality = analyze_prompt_quality(prompts)
-        report['characteristic_quality'][name] = quality
-        report['total_prompts'] += len(prompts)
+        report["characteristic_quality"][name] = quality
+        report["total_prompts"] += len(prompts)
 
-        if quality['score'] < 50:
-            report['valid'] = False
-            report['issues'].append(f"'{name}' ha qualita troppo bassa ({quality['score']}/100)")
-        elif quality['score'] < 70:
-            report['issues'].append(f"'{name}' potrebbe essere migliorata ({quality['score']}/100)")
+        if quality["score"] < 50:
+            report["valid"] = False
+            report["issues"].append(
+                f"'{name}' ha qualita troppo bassa ({quality['score']}/100)"
+            )
+        elif quality["score"] < 70:
+            report["issues"].append(
+                f"'{name}' potrebbe essere migliorata ({quality['score']}/100)"
+            )
 
     return report
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Run wizard in standalone mode
     print("NIMITZ Vocabulary Wizard - Standalone Mode")
 
