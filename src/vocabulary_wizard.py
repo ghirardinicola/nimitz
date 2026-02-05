@@ -466,22 +466,38 @@ def _get_fallback_suggestions() -> Dict[str, List[str]]:
 class VocabularyWizard:
     """Interactive wizard for creating custom vocabularies"""
 
-    def __init__(self, image_directory: Optional[str] = None):
+    def __init__(
+        self,
+        image_directory: Optional[str] = None,
+        existing_vocabulary: Optional[Dict[str, List[str]]] = None,
+        output_file: Optional[str] = None,
+    ):
         self.image_directory = image_directory
-        self.characteristics: Dict[str, List[str]] = {}
+        self.characteristics: Dict[str, List[str]] = (
+            existing_vocabulary.copy() if existing_vocabulary else {}
+        )
         self.history: List[Dict[str, Any]] = []
+        self.is_editing_existing = existing_vocabulary is not None
+        self.output_file = output_file  # Where to save the vocabulary
 
     def run(self) -> Dict[str, List[str]]:
         """Run the interactive wizard"""
         self._print_header()
 
-        # Step 1: Offer suggestions
-        if self.image_directory:
-            # Image-based suggestions (CLIP)
-            self._offer_suggestions()
+        # Step 1: Offer suggestions (only if creating new vocabulary)
+        if not self.is_editing_existing:
+            if self.image_directory:
+                # Image-based suggestions (CLIP)
+                self._offer_suggestions()
+            else:
+                # Semantic suggestions (LLM) when no images
+                self._offer_semantic_suggestions()
         else:
-            # Semantic suggestions (LLM) when no images
-            self._offer_semantic_suggestions()
+            # Editing existing vocabulary
+            print("\n 📝 Modalità MODIFICA vocabolario esistente")
+            print(f"    Caratteristiche caricate: {len(self.characteristics)}")
+            print()
+            self._show_current()
 
         # Step 2: Main editing loop
         self._main_loop()
@@ -1038,27 +1054,75 @@ COMANDI:
             for issue in all_issues[:3]:
                 print(f"   - {issue}")
 
-        # Offer to save
-        save_path = input(
-            "\nSalva vocabolario su file? [percorso o invio per saltare]: "
-        ).strip()
+        # Auto-save vocabulary
+        save_path = self._determine_save_path()
         if save_path:
             try:
                 self._save_vocabulary(save_path)
-                print(f" Salvato in: {save_path}")
+                print(f"\n ✅ Vocabolario salvato in: {save_path}")
             except Exception as e:
-                print(f" Errore salvataggio: {e}")
+                print(f"\n ⚠️  Errore salvataggio: {e}")
+                print("    Il vocabolario non è stato salvato su disco.")
 
         return self.characteristics
 
+    def _determine_save_path(self) -> Optional[str]:
+        """
+        Determine where to save the vocabulary file.
+
+        Returns:
+            Path to save file, or None if saving should be skipped
+        """
+        from pathlib import Path
+        from datetime import datetime
+
+        # If output file was explicitly specified, use it
+        if self.output_file:
+            return self.output_file
+
+        # If editing existing vocabulary, try to find the original file
+        if self.is_editing_existing:
+            # Look for existing vocabulary files in current directory
+            discovered = discover_project_files()
+            if discovered["recommended_vocabulary"]:
+                # Ask if user wants to overwrite the existing file
+                filename = Path(discovered["recommended_vocabulary"]).name
+                print(f"\n💾 File esistente trovato: {filename}")
+                response = (
+                    input("   Sovrascrivere questo file? [S/n]: ").strip().lower()
+                )
+                if response != "n":
+                    return discovered["recommended_vocabulary"]
+
+        # Generate new filename with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # Try to create a meaningful name based on content
+        if self.characteristics:
+            # Use first characteristic as hint for naming
+            first_char = list(self.characteristics.keys())[0]
+            # Clean the name (remove special chars, limit length)
+            clean_name = "".join(c if c.isalnum() else "_" for c in first_char.lower())
+            clean_name = clean_name[:20]  # Limit length
+            filename = f"vocabulary_{clean_name}_{timestamp}.json"
+        else:
+            filename = f"vocabulary_{timestamp}.json"
+
+        print(f"\n💾 Salvataggio automatico in: {filename}")
+        return filename
+
     def _save_vocabulary(self, path: str):
         """Save vocabulary to JSON file"""
+        from datetime import datetime
+
         data = {
             "characteristics": self.characteristics,
             "metadata": {
                 "created_by": "NIMITZ Vocabulary Wizard",
+                "created_at": datetime.now().isoformat(),
                 "total_characteristics": len(self.characteristics),
                 "total_prompts": sum(len(p) for p in self.characteristics.values()),
+                "is_edited": self.is_editing_existing,
             },
         }
 
@@ -1067,21 +1131,252 @@ COMANDI:
 
 
 # =============================================================================
+# AUTO-DETECTION UTILITIES
+# =============================================================================
+
+
+def discover_project_files(
+    working_dir: str = ".",
+) -> Dict[str, Any]:
+    """
+    Auto-detect existing vocabulary, cards, and images in the project.
+
+    Args:
+        working_dir: Directory to search in (default: current directory)
+
+    Returns:
+        Dictionary with discovered files and directories:
+        {
+            "vocabulary_files": [list of .json vocab files],
+            "cards_files": [list of cards JSON files],
+            "image_directories": [list of directories with images],
+            "recommended_vocabulary": path to best vocabulary file or None,
+            "recommended_images": path to best image directory or None,
+        }
+    """
+    from pathlib import Path
+
+    result = {
+        "vocabulary_files": [],
+        "cards_files": [],
+        "image_directories": [],
+        "recommended_vocabulary": None,
+        "recommended_images": None,
+    }
+
+    working_path = Path(working_dir).resolve()
+
+    # Search for vocabulary JSON files
+    # Look for files with "vocab", "characteristics" in name
+    vocab_patterns = ["*vocab*.json", "*characteristic*.json"]
+    seen_vocab_files = set()
+    for pattern in vocab_patterns:
+        for file in working_path.glob(pattern):
+            file_str = str(file)
+            if file.is_file() and file_str not in seen_vocab_files:
+                # Try to load and validate it's a real vocabulary
+                vocab = load_vocabulary_from_file(file_str)
+                if vocab is not None:
+                    result["vocabulary_files"].append(file_str)
+                    seen_vocab_files.add(file_str)
+
+    # Search for cards JSON files
+    cards_patterns = ["*cards*.json", "*analysis*.json"]
+    seen_cards_files = set()
+    for pattern in cards_patterns:
+        for file in working_path.glob(pattern):
+            file_str = str(file)
+            if file.is_file() and file_str not in seen_cards_files:
+                result["cards_files"].append(file_str)
+                seen_cards_files.add(file_str)
+
+    # Search for image directories
+    # Look for directories with common names or containing image files
+    image_dir_names = ["images", "cards", "photos", "*_cards"]
+    seen_image_dirs = set()
+    for pattern in image_dir_names:
+        for dir_path in working_path.glob(pattern):
+            dir_str = str(dir_path)
+            if dir_path.is_dir() and dir_str not in seen_image_dirs:
+                # Check if it contains images
+                image_files = list(dir_path.glob("*.jpg")) + list(
+                    dir_path.glob("*.jpeg")
+                )
+                image_files += list(dir_path.glob("*.png"))
+                if image_files:
+                    result["image_directories"].append(dir_str)
+                    seen_image_dirs.add(dir_str)
+
+    # Recommend best vocabulary file (most recently modified)
+    if result["vocabulary_files"]:
+        vocab_files_sorted = sorted(
+            result["vocabulary_files"],
+            key=lambda x: Path(x).stat().st_mtime,
+            reverse=True,
+        )
+        result["recommended_vocabulary"] = vocab_files_sorted[0]
+
+    # Recommend best image directory (most images)
+    if result["image_directories"]:
+        best_dir = max(
+            result["image_directories"],
+            key=lambda d: len(list(Path(d).glob("*.jpg")))
+            + len(list(Path(d).glob("*.jpeg")))
+            + len(list(Path(d).glob("*.png"))),
+        )
+        result["recommended_images"] = best_dir
+
+    return result
+
+
+def load_vocabulary_from_file(file_path: str) -> Optional[Dict[str, List[str]]]:
+    """
+    Load vocabulary from a JSON file.
+
+    Args:
+        file_path: Path to vocabulary JSON file
+
+    Returns:
+        Dictionary of characteristics, or None if failed
+    """
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+            # Support both {"characteristics": {...}} and direct {...} format
+            if isinstance(data, dict):
+                if "characteristics" in data:
+                    vocab = data["characteristics"]
+                else:
+                    vocab = data
+
+                # Validate it looks like a vocabulary (dict of lists of strings)
+                if isinstance(vocab, dict) and vocab:
+                    # Check if all values are lists
+                    if not all(isinstance(v, list) for v in vocab.values()):
+                        return None
+
+                    # Check if lists contain strings (prompts)
+                    # Exclude analysis files that contain dicts like {"name": ..., "scores": ...}
+                    for key, value in vocab.items():
+                        if not value:  # Empty list is ok
+                            continue
+                        # If first item is a dict, it's probably a cards file, not vocabulary
+                        if isinstance(value[0], dict):
+                            return None
+                        # If not all strings, not a vocabulary
+                        if not all(isinstance(item, str) for item in value):
+                            return None
+
+                    return vocab
+        return None
+    except Exception as e:
+        print(f"  ⚠️  Error loading {file_path}: {e}")
+        return None
+
+
+# =============================================================================
 # CLI ENTRY POINTS
 # =============================================================================
 
 
-def run_wizard(image_directory: Optional[str] = None) -> Dict[str, List[str]]:
+def run_wizard(
+    image_directory: Optional[str] = None,
+    existing_vocabulary: Optional[Dict[str, List[str]]] = None,
+    auto_detect: bool = True,
+    output_file: Optional[str] = None,
+) -> Dict[str, List[str]]:
     """
     Run the vocabulary wizard.
 
     Args:
         image_directory: Optional path to images for generating suggestions
+        existing_vocabulary: Optional existing vocabulary to edit
+        auto_detect: If True, auto-detect existing files before starting
+        output_file: Optional path where to save the vocabulary
 
     Returns:
         Dictionary of characteristics
     """
-    wizard = VocabularyWizard(image_directory)
+    # Auto-detection phase
+    if auto_detect and existing_vocabulary is None:
+        print("\n🔍 Ricerca file esistenti...")
+        discovered = discover_project_files()
+
+        # Show discovered files
+        if discovered["vocabulary_files"] or discovered["image_directories"]:
+            print("\n📋 File trovati:")
+
+            if discovered["vocabulary_files"]:
+                print(f"\n  Vocabolari ({len(discovered['vocabulary_files'])}):")
+                for i, vf in enumerate(discovered["vocabulary_files"], 1):
+                    marker = (
+                        " ← (raccomandato)"
+                        if vf == discovered["recommended_vocabulary"]
+                        else ""
+                    )
+                    print(f"    {i}. {Path(vf).name}{marker}")
+
+            if discovered["image_directories"]:
+                print(
+                    f"\n  Directory immagini ({len(discovered['image_directories'])}):"
+                )
+                for i, img_dir in enumerate(discovered["image_directories"], 1):
+                    image_count = (
+                        len(list(Path(img_dir).glob("*.jpg")))
+                        + len(list(Path(img_dir).glob("*.jpeg")))
+                        + len(list(Path(img_dir).glob("*.png")))
+                    )
+                    marker = (
+                        " ← (raccomandato)"
+                        if img_dir == discovered["recommended_images"]
+                        else ""
+                    )
+                    print(
+                        f"    {i}. {Path(img_dir).name} ({image_count} immagini){marker}"
+                    )
+
+            # Ask if user wants to use discovered files
+            if discovered["recommended_vocabulary"]:
+                print(
+                    f"\n💡 Vocabolario raccomandato: {Path(discovered['recommended_vocabulary']).name}"
+                )
+                response = (
+                    input("   Vuoi modificare questo vocabolario? [S/n]: ")
+                    .strip()
+                    .lower()
+                )
+
+                if response != "n":
+                    existing_vocabulary = load_vocabulary_from_file(
+                        discovered["recommended_vocabulary"]
+                    )
+                    if existing_vocabulary:
+                        print(
+                            f"   ✅ Vocabolario caricato ({len(existing_vocabulary)} caratteristiche)"
+                        )
+                        # If no output file specified and we're editing, suggest using same file
+                        if not output_file:
+                            output_file = discovered["recommended_vocabulary"]
+
+            # Suggest image directory
+            if discovered["recommended_images"] and not image_directory:
+                response = (
+                    input(
+                        f"\n💡 Usare directory immagini '{Path(discovered['recommended_images']).name}'? [S/n]: "
+                    )
+                    .strip()
+                    .lower()
+                )
+
+                if response != "n":
+                    image_directory = discovered["recommended_images"]
+                    print(f"   ✅ Directory immagini impostata")
+
+        else:
+            print("  Nessun file esistente trovato. Creerò un nuovo vocabolario.")
+
+    wizard = VocabularyWizard(image_directory, existing_vocabulary, output_file)
     return wizard.run()
 
 

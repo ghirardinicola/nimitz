@@ -13,11 +13,7 @@ import glob
 # Setup path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
-from dotenv import load_dotenv
 from quantitative_scoring import convert_to_quantitative_scores
-
-# Load environment
-load_dotenv()
 
 
 def load_vocabulary(vocab_file: str) -> Dict:

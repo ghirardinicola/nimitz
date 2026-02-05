@@ -346,6 +346,8 @@ def run_vocabulary_wizard(
     image_directory: Optional[str] = None,
     output_file: Optional[str] = None,
     analyze_after: bool = False,
+    existing_vocab_file: Optional[str] = None,
+    auto_detect: bool = True,
 ):
     """
     Run the interactive vocabulary wizard.
@@ -354,24 +356,48 @@ def run_vocabulary_wizard(
         image_directory: Directory with sample images for suggestions
         output_file: Output file to save vocabulary
         analyze_after: Run analysis after creating vocabulary
+        existing_vocab_file: Path to existing vocabulary file to edit
+        auto_detect: Auto-detect existing files (default: True)
     """
     print("\n NIMITZ - Vocabulary Wizard")
     print("=" * 50)
 
-    # Run wizard
-    vocabulary = run_wizard(image_directory)
+    # Load existing vocabulary if explicitly specified
+    existing_vocabulary = None
+    if existing_vocab_file:
+        import json
+        from pathlib import Path
+
+        vocab_path = Path(existing_vocab_file)
+        if vocab_path.exists():
+            try:
+                with open(vocab_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    existing_vocabulary = data.get("characteristics", data)
+                print(f"\n ✅ Vocabolario caricato da: {existing_vocab_file}")
+                print(f"    Caratteristiche: {len(existing_vocabulary)}")
+                auto_detect = False  # Don't auto-detect if file explicitly provided
+            except Exception as e:
+                print(f"\n ⚠️  Errore nel caricamento di {existing_vocab_file}: {e}")
+                print("    Procedo creando un nuovo vocabolario")
+        else:
+            print(f"\n ⚠️  File {existing_vocab_file} non trovato")
+            print("    Procedo creando un nuovo vocabolario")
+
+    # Run wizard with auto-detection
+    vocabulary = run_wizard(
+        image_directory,
+        existing_vocabulary,
+        auto_detect=auto_detect,
+        output_file=output_file,
+    )
 
     if not vocabulary:
         print("\nVocabulary creation cancelled or empty.")
         return
 
-    # Save if output specified
-    if output_file:
-        import json
-
-        with open(output_file, "w", encoding="utf-8") as f:
-            json.dump({"characteristics": vocabulary}, f, indent=2, ensure_ascii=False)
-        print(f"\n Vocabulary saved to: {output_file}")
+    # Note: Vocabulary is now auto-saved by the wizard
+    # No need to save again here
 
     # Analyze if requested
     if analyze_after and image_directory:
@@ -1468,6 +1494,17 @@ LLM Mode (no CLIP required):
         action="store_true",
         help="After creating vocabulary, analyze images immediately",
     )
+    wizard_parser.add_argument(
+        "-e",
+        "--edit",
+        metavar="VOCAB_FILE",
+        help="Edit an existing vocabulary file instead of creating new one",
+    )
+    wizard_parser.add_argument(
+        "--no-auto-detect",
+        action="store_true",
+        help="Disable automatic detection of existing files",
+    )
 
     # -------------------------------------------------------------------------
     # validate command
@@ -1955,6 +1992,8 @@ Examples:
             image_directory=args.directory,
             output_file=args.output,
             analyze_after=args.analyze,
+            existing_vocab_file=args.edit,
+            auto_detect=not args.no_auto_detect,
         )
 
     elif args.command == "validate":
