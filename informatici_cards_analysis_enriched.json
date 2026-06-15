@@ -1,0 +1,1570 @@
+[
+  {
+    "name": "Ada Lovelace",
+    "image": "./cards/quartetto/wiki_images/Ada_Lovelace.png",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "advanced_technologies": {
+        "value": 75,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 1,
+        "display_name": "Advanced Tech"
+      },
+      "market_influence": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with great impact on a technology sector",
+        "rank": 2,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with profile recognized by industry-leading companies",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 4,
+        "display_name": "Openness"
+      },
+      "beard_length": {
+        "value": 60,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "advanced_technologies",
+      "display_name": "Advanced Tech",
+      "value": 75,
+      "description": "developer with advanced skills in emerging technologies and new architectures"
+    }
+  },
+  {
+    "name": "Adi Shamir",
+    "image": "./cards/quartetto/wiki_images/Adi_Shamir.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Alan Kay",
+    "image": "./cards/quartetto/wiki_images/Alan_Kay.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 4,
+        "display_name": "Openness"
+      },
+      "beard_length": {
+        "value": 60,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Alan Turing",
+    "image": "./cards/quartetto/wiki_images/Alan_Turing.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "advanced_technologies": {
+        "value": 82,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 1,
+        "display_name": "Advanced Tech"
+      },
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 2,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "openness": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer with strong open source commitment and significant contributions to global projects",
+        "rank": 4,
+        "display_name": "Openness"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "advanced_technologies",
+      "display_name": "Advanced Tech",
+      "value": 82,
+      "description": "programmer using cutting-edge technologies and AI tools"
+    }
+  },
+  {
+    "name": "Barbara Liskov",
+    "image": "./cards/quartetto/wiki_images/Barbara_Liskov.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 2,
+        "display_name": "Recognition"
+      },
+      "advanced_technologies": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 3,
+        "display_name": "Advanced Tech"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 4,
+        "display_name": "Openness"
+      },
+      "beard_length": {
+        "value": 67,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Bjarne Stroustrup",
+    "image": "./cards/quartetto/wiki_images/Bjarne_Stroustrup.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Bob Kahn",
+    "image": "./cards/quartetto/wiki_images/Bob_Kahn.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 2,
+        "display_name": "Recognition"
+      },
+      "advanced_technologies": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 3,
+        "display_name": "Advanced Tech"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Dennis Ritchie",
+    "image": "./cards/quartetto/wiki_images/Dennis_Ritchie.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 4,
+        "display_name": "Openness"
+      },
+      "beard_length": {
+        "value": 67,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Donald Knuth",
+    "image": "./cards/quartetto/wiki_images/Donald_Knuth.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "openness": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer with strong open source commitment and significant contributions to global projects",
+        "rank": 4,
+        "display_name": "Openness"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Edsger Dijkstra",
+    "image": "./cards/quartetto/wiki_images/Edsger_Dijkstra.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 2,
+        "display_name": "Recognition"
+      },
+      "advanced_technologies": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 3,
+        "display_name": "Advanced Tech"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Elizabeth Feinler",
+    "image": "./cards/quartetto/wiki_images/Elizabeth_Feinler.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with great impact on a technology sector",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with profile recognized by industry-leading companies",
+        "rank": 2,
+        "display_name": "Recognition"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 3,
+        "display_name": "Openness"
+      },
+      "advanced_technologies": {
+        "value": 67,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 4,
+        "display_name": "Advanced Tech"
+      },
+      "beard_length": {
+        "value": 60,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 74,
+      "description": "developer with great impact on a technology sector"
+    }
+  },
+  {
+    "name": "Grace Hopper",
+    "image": "./cards/quartetto/wiki_images/Grace_Hopper.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 2,
+        "display_name": "Recognition"
+      },
+      "advanced_technologies": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 3,
+        "display_name": "Advanced Tech"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 4,
+        "display_name": "Openness"
+      },
+      "beard_length": {
+        "value": 60,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Guido van Rossum",
+    "image": "./cards/quartetto/wiki_images/Guido_van_Rossum.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 2,
+        "display_name": "Recognition"
+      },
+      "openness": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer with strong open source commitment and significant contributions to global projects",
+        "rank": 3,
+        "display_name": "Openness"
+      },
+      "advanced_technologies": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 4,
+        "display_name": "Advanced Tech"
+      },
+      "beard_length": {
+        "value": 67,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "James Gosling",
+    "image": "./cards/quartetto/wiki_images/James_Gosling.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "advanced_technologies": {
+        "value": 82,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 1,
+        "display_name": "Advanced Tech"
+      },
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 2,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "openness": {
+        "value": 67,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 4,
+        "display_name": "Openness"
+      },
+      "beard_length": {
+        "value": 60,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "advanced_technologies",
+      "display_name": "Advanced Tech",
+      "value": 82,
+      "description": "programmer using cutting-edge technologies and AI tools"
+    }
+  },
+  {
+    "name": "John Backus",
+    "image": "./cards/quartetto/wiki_images/John_Backus.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "John McCarthy",
+    "image": "./cards/quartetto/wiki_images/John_McCarthy.png",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Kimberly Bryant",
+    "image": "./cards/quartetto/wiki_images/Kimberly_Bryant.png",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 67,
+        "level": 3,
+        "description": "developer with great impact on a technology sector",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 67,
+        "level": 3,
+        "description": "developer with profile recognized by industry-leading companies",
+        "rank": 2,
+        "display_name": "Recognition"
+      },
+      "advanced_technologies": {
+        "value": 60,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 3,
+        "display_name": "Advanced Tech"
+      },
+      "beard_length": {
+        "value": 60,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 60,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 67,
+      "description": "developer with great impact on a technology sector"
+    }
+  },
+  {
+    "name": "Larry Wall",
+    "image": "./cards/quartetto/wiki_images/Larry_Wall.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 1,
+        "display_name": "Recognition"
+      },
+      "market_influence": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with great impact on a technology sector",
+        "rank": 2,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 3,
+        "display_name": "Advanced Tech"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "professional_recognition",
+      "display_name": "Recognition",
+      "value": 81,
+      "description": "legendary programmer with awards, published books and global recognition"
+    }
+  },
+  {
+    "name": "Leonard Adleman",
+    "image": "./cards/quartetto/wiki_images/Leonard_Adleman.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 2,
+        "display_name": "Recognition"
+      },
+      "advanced_technologies": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 3,
+        "display_name": "Advanced Tech"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 60,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Leonardo Torres Quevedo",
+    "image": "./cards/quartetto/wiki_images/Leonardo_Torres_Quevedo.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 67,
+        "level": 3,
+        "description": "developer with great impact on a technology sector",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 67,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 67,
+        "level": 3,
+        "description": "developer with profile recognized by industry-leading companies",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "beard_length": {
+        "value": 67,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 60,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 67,
+      "description": "developer with great impact on a technology sector"
+    }
+  },
+  {
+    "name": "Linus Torvalds",
+    "image": "./cards/quartetto/wiki_images/Linus_Torvalds.jpeg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "openness": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer with strong open source commitment and significant contributions to global projects",
+        "rank": 4,
+        "display_name": "Openness"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Martin Hellman",
+    "image": "./cards/quartetto/wiki_images/Martin_Hellman.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 67,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Marvin Minsky",
+    "image": "./cards/quartetto/wiki_images/Marvin_Minsky.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Niklaus Wirth",
+    "image": "./cards/quartetto/wiki_images/Niklaus_Wirth.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 2,
+        "display_name": "Recognition"
+      },
+      "advanced_technologies": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 3,
+        "display_name": "Advanced Tech"
+      },
+      "beard_length": {
+        "value": 67,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 46,
+        "level": 2,
+        "description": "programmer with public repositories and limited collaborations",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Oded Goldreich",
+    "image": "./cards/quartetto/wiki_images/Oded_Goldreich.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 2,
+        "display_name": "Recognition"
+      },
+      "advanced_technologies": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 3,
+        "display_name": "Advanced Tech"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 60,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Ron Rivest",
+    "image": "./cards/quartetto/wiki_images/Ron_Rivest.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 60,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Shafi Goldwasser",
+    "image": "./cards/quartetto/wiki_images/Shafi_Goldwasser.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 67,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Silvio Micali",
+    "image": "./cards/quartetto/wiki_images/Silvio_Micali.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 60,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Tim Berners-Lee",
+    "image": "./cards/quartetto/wiki_images/Tim_Berners-Lee.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "openness": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer with strong open source commitment and significant contributions to global projects",
+        "rank": 4,
+        "display_name": "Openness"
+      },
+      "beard_length": {
+        "value": 60,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Vint Cerf",
+    "image": "./cards/quartetto/wiki_images/Vint_Cerf.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "openness": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer with strong open source commitment and significant contributions to global projects",
+        "rank": 4,
+        "display_name": "Openness"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Whitfield Diffie",
+    "image": "./cards/quartetto/wiki_images/Whitfield_Diffie.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 81,
+        "level": 4,
+        "description": "influential programmer with wide user base and international recognition",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 81,
+        "level": 4,
+        "description": "programmer using cutting-edge technologies and AI tools",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 81,
+        "level": 4,
+        "description": "legendary programmer with awards, published books and global recognition",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "beard_length": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 4,
+        "display_name": "Beard Length"
+      },
+      "openness": {
+        "value": 67,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 5,
+        "display_name": "Openness"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 81,
+      "description": "influential programmer with wide user base and international recognition"
+    }
+  },
+  {
+    "name": "Yukihiro Matsumoto",
+    "image": "./cards/quartetto/wiki_images/Yukihiro_Matsumoto.jpg",
+    "image_source": "wikipedia",
+    "attribution": "Wikimedia Commons",
+    "scores": {
+      "market_influence": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with great impact on a technology sector",
+        "rank": 1,
+        "display_name": "Market Influence"
+      },
+      "advanced_technologies": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with advanced skills in emerging technologies and new architectures",
+        "rank": 2,
+        "display_name": "Advanced Tech"
+      },
+      "professional_recognition": {
+        "value": 74,
+        "level": 3,
+        "description": "developer with profile recognized by industry-leading companies",
+        "rank": 3,
+        "display_name": "Recognition"
+      },
+      "openness": {
+        "value": 74,
+        "level": 3,
+        "description": "developer active in open source communities and collaborative projects",
+        "rank": 4,
+        "display_name": "Openness"
+      },
+      "beard_length": {
+        "value": 60,
+        "level": 3,
+        "description": "developer with long and stylish beard",
+        "rank": 5,
+        "display_name": "Beard Length"
+      }
+    },
+    "top_skill": {
+      "key": "market_influence",
+      "display_name": "Market Influence",
+      "value": 74,
+      "description": "developer with great impact on a technology sector"
+    }
+  }
+]

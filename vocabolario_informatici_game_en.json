@@ -1,0 +1,55 @@
+{
+  "characteristics": {
+    "market_influence": [
+      "programmer with few collaborations and little recognition",
+      "developer with a small group of followers and local projects",
+      "programmer with a portfolio known in specific sectors",
+      "developer with great impact on a technology sector",
+      "influential programmer with wide user base and international recognition"
+    ],
+    "advanced_technologies": [
+      "programmer using only basic languages and simple tools",
+      "developer with knowledge of modern languages but limited",
+      "programmer expert in common frameworks and standard technologies",
+      "developer with advanced skills in emerging technologies and new architectures",
+      "programmer using cutting-edge technologies and AI tools"
+    ],
+    "professional_recognition": [
+      "programmer without certifications or public recognition",
+      "developer with some local or academic recognition",
+      "programmer with international certifications and conference participation",
+      "developer with profile recognized by industry-leading companies",
+      "legendary programmer with awards, published books and global recognition"
+    ],
+    "beard_length": [
+      "programmer with short beard or clean-shaven",
+      "developer with slightly grown beard",
+      "programmer with medium, well-groomed beard",
+      "developer with long and stylish beard",
+      "programmer with long and thick beard, typical of a true hacker"
+    ],
+    "openness": [
+      "programmer working in closed mode without sharing code",
+      "developer with some open contributions and private repositories",
+      "programmer with public repositories and limited collaborations",
+      "developer active in open source communities and collaborative projects",
+      "programmer with strong open source commitment and significant contributions to global projects"
+    ]
+  },
+  "display_names": {
+    "market_influence": "Market Influence",
+    "advanced_technologies": "Advanced Tech",
+    "professional_recognition": "Recognition",
+    "beard_length": "Beard Length",
+    "openness": "Openness"
+  },
+  "metadata": {
+    "created_by": "NIMITZ Quartetto Card Generator",
+    "created_at": "2025-02-05",
+    "language": "en",
+    "translated_from": "vocabolario_informatici_game.json",
+    "total_characteristics": 5,
+    "total_prompts": 25,
+    "card_style": "Top Trumps / Quartetto"
+  }
+}
